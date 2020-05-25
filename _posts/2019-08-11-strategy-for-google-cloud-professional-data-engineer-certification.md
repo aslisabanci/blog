@@ -2,9 +2,8 @@
 toc: true
 layout: post
 title: My Strategy For The Google Cloud Professional Data Engineer Certification
-categories:
-  - google-cloud
-  - data-engineering
+image: images/gcp/thumbnail-gcp.png
+categories: [google-cloud, data-engineering]
 description: "Google's Professional Data Engineer certification exam is said to be difficult. I didn't believe it much until I took the exam myself. Now I also confirm that it's indeed a difficult exam and I don't think it can be achieved without thorough preparation and a solid engineering mindset."
 ---
 
