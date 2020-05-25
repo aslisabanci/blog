@@ -3,7 +3,7 @@ toc: true
 layout: post
 title: How to Filter AWS Lambda Log Messages for CloudWatch Dashboard Widget
 description: If you want see the graph of your Lambda function's specific log messages' count and create a CloudWatch dashboard widget out of it, you can have this setup.
-tags:
+categories:
   - aws
   - data-engineering
   - lambda
