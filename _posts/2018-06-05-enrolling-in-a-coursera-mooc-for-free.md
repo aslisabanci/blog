@@ -2,10 +2,6 @@
 toc: true
 layout: post
 title: Enrolling in Andrew Ng's Deep Learning Specialization MOOC for free
-author: ~
-date: '2018-06-05'
-slug: enrolling-in-deep-learning-specialization-mooc-for-free
-image: images/coursera/thumbnail-dl-coursera.png
 categories:
   - lifehack
   - coursera
