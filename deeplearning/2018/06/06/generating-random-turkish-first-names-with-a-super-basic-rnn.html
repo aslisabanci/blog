@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Generating random Turkish first names with a super basic RNN | Aslı Sabancı</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Generating random Turkish first names with a super basic RNN" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Inspired by the mini ‘Dinosaur name generator’ project I did a while ago, I wanted to re-use the core code (with some modifications and refactorings of my own) and try to generate Turkish first names. The project was about building a simple recurrent neural network using numpy and it was a part of the Sequence Models course of Andrew Ng’s awesome Deep Learning Specialization series on Coursera." />
+<meta property="og:description" content="Inspired by the mini ‘Dinosaur name generator’ project I did a while ago, I wanted to re-use the core code (with some modifications and refactorings of my own) and try to generate Turkish first names. The project was about building a simple recurrent neural network using numpy and it was a part of the Sequence Models course of Andrew Ng’s awesome Deep Learning Specialization series on Coursera." />
+<link rel="canonical" href="https://aslisabanci.github.io/blog/deeplearning/2018/06/06/generating-random-turkish-first-names-with-a-super-basic-rnn.html" />
+<meta property="og:url" content="https://aslisabanci.github.io/blog/deeplearning/2018/06/06/generating-random-turkish-first-names-with-a-super-basic-rnn.html" />
+<meta property="og:site_name" content="Aslı Sabancı" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-06-06T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"Inspired by the mini ‘Dinosaur name generator’ project I did a while ago, I wanted to re-use the core code (with some modifications and refactorings of my own) and try to generate Turkish first names. The project was about building a simple recurrent neural network using numpy and it was a part of the Sequence Models course of Andrew Ng’s awesome Deep Learning Specialization series on Coursera.","mainEntityOfPage":{"@type":"WebPage","@id":"https://aslisabanci.github.io/blog/deeplearning/2018/06/06/generating-random-turkish-first-names-with-a-super-basic-rnn.html"},"@type":"BlogPosting","url":"https://aslisabanci.github.io/blog/deeplearning/2018/06/06/generating-random-turkish-first-names-with-a-super-basic-rnn.html","headline":"Generating random Turkish first names with a super basic RNN","dateModified":"2018-06-06T00:00:00-05:00","datePublished":"2018-06-06T00:00:00-05:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://aslisabanci.github.io/blog/feed.xml" title="Aslı Sabancı" /><link rel="shortcut icon" type="image/x-icon" href="/blog/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Generating random Turkish first names with a super basic RNN | Aslı Sabancı</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Generating random Turkish first names with a super basic RNN" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Inspired by the mini ‘Dinosaur name generator’ project I did a while ago, I wanted to re-use the core code (with some modifications and refactorings of my own) and try to generate Turkish first names. The project was about building a simple recurrent neural network using numpy and it was a part of the Sequence Models course of Andrew Ng’s awesome Deep Learning Specialization series on Coursera." />
+<meta property="og:description" content="Inspired by the mini ‘Dinosaur name generator’ project I did a while ago, I wanted to re-use the core code (with some modifications and refactorings of my own) and try to generate Turkish first names. The project was about building a simple recurrent neural network using numpy and it was a part of the Sequence Models course of Andrew Ng’s awesome Deep Learning Specialization series on Coursera." />
+<link rel="canonical" href="https://aslisabanci.github.io/blog/deeplearning/2018/06/06/generating-random-turkish-first-names-with-a-super-basic-rnn.html" />
+<meta property="og:url" content="https://aslisabanci.github.io/blog/deeplearning/2018/06/06/generating-random-turkish-first-names-with-a-super-basic-rnn.html" />
+<meta property="og:site_name" content="Aslı Sabancı" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-06-06T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"Inspired by the mini ‘Dinosaur name generator’ project I did a while ago, I wanted to re-use the core code (with some modifications and refactorings of my own) and try to generate Turkish first names. The project was about building a simple recurrent neural network using numpy and it was a part of the Sequence Models course of Andrew Ng’s awesome Deep Learning Specialization series on Coursera.","mainEntityOfPage":{"@type":"WebPage","@id":"https://aslisabanci.github.io/blog/deeplearning/2018/06/06/generating-random-turkish-first-names-with-a-super-basic-rnn.html"},"@type":"BlogPosting","url":"https://aslisabanci.github.io/blog/deeplearning/2018/06/06/generating-random-turkish-first-names-with-a-super-basic-rnn.html","headline":"Generating random Turkish first names with a super basic RNN","dateModified":"2018-06-06T00:00:00-05:00","datePublished":"2018-06-06T00:00:00-05:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://aslisabanci.github.io/blog/feed.xml" title="Aslı Sabancı" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/blog/">Aslı Sabancı</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/blog/about/">About Me</a><a class="page-link" href="/blog/search/">Search</a><a class="page-link" href="/blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Generating random Turkish first names with a super basic RNN</h1><p class="page-description">Inspired by the mini 'Dinosaur name generator' project I did a while ago, I wanted to re-use the core code (with some modifications and refactorings of my own) and try to generate Turkish first names. The project was about building a simple recurrent neural network using numpy and it was a part of the Sequence Models course of Andrew Ng's awesome Deep Learning Specialization series on Coursera.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2018-06-06T00:00:00-05:00" itemprop="datePublished">
+        Jun 6, 2018
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      4 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/blog/categories/#deeplearning">deeplearning</a>
+        
+      
+      </p>
+    
+
+    </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#main-flow">Main Flow</a></li>
+<li class="toc-entry toc-h2"><a href="#preprocessing-the-data">Preprocessing the data</a></li>
+<li class="toc-entry toc-h2"><a href="#getting-predictions">Getting predictions</a></li>
+<li class="toc-entry toc-h2"><a href="#my-thoughts">My thoughts</a></li>
+</ul><p>Inspired by the mini “Dinosaur name generator” project I did a while ago, I wanted to re-use the core code (with some modifications and refactorings of my own) and try to generate Turkish first names. The project was about building a simple recurrent neural network using numpy and it was a part of the Sequence Models course of <a href="http://deeplearning.ai/">Andrew Ng’s awesome Deep Learning Specialization series on Coursera</a>.</p>
+
+<h2 id="main-flow">
+<a class="anchor" href="#main-flow" aria-hidden="true"><span class="octicon octicon-link"></span></a>Main Flow</h2>
+
+<p>The project builds a simple character level language model to generate new first names. Roughly, the steps are to:</p>
+
+<ul>
+  <li>Initialize the weights</li>
+  <li>Forward propagate and calculate the loss</li>
+  <li>Backward propagate and calculate the gradients, using the loss</li>
+  <li>Clip the gradients with a max value, so that they don’t explode</li>
+  <li>Update the weights using the gradients</li>
+</ul>
+
+<p>The input we provide is the list of characters of each name in the dataset; and the output at every time step is the next character to be used. At each time step, our recurrent neural network is picking a character, given the previous character, according to a probability distribution.</p>
+
+<h2 id="preprocessing-the-data">
+<a class="anchor" href="#preprocessing-the-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Preprocessing the data</h2>
+<p>I wanted to try this model with two approaches:</p>
+
+<ul>
+  <li>Get the most common 10 thousand names within the whole dataset (so that the dataset consists of unique names)</li>
+  <li>Get 3 million names, regardless of their frequency (so that the frequent names appear more in the dataset)</li>
+</ul>
+
+<p>For both approaches, I needed to clean the data first because some of the names contained characters like dot, paranthese, hyphen, number and what not.</p>
+
+<p>Also there were some non-Turkish names in the dataset, so I removed names that contain “x”, “w”, “q” as these letters are not in the Turkish alphabet.</p>
+
+<p>Lastly, there were a lot of first names consisting of two or three names. Since I didn’t want my model to generate names consisting of two or more names, I split these into single ones. While procesing the names one by one, I added a split name into my list of names, if it hasn’t been added in the earlier iterations.</p>
+
+<p>There were a lot of names with this style within my 10K and 3m dataset. So after reducing them to single names, I only ended up with ~700 and ~5000 distinct names respectively.</p>
+
+<h2 id="getting-predictions">
+<a class="anchor" href="#getting-predictions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting predictions</h2>
+<p>I wanted to see how familiar the names will look, when trained with the most common Turkish names (10K dataset) and when trained with most of the names coming from the longer tail (3m dataset).</p>
+
+<p>So I took 10 different output samples from each model.</p>
+
+<table>
+  <thead>
+    <tr>
+      <th>10K dataset</th>
+      <th>3m dataset</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Sin, Badir, Sedef, Akmul, Salan, Betad, Behan, Siga, Kanefi, Sac</td>
+      <td>Bevit, Ezer, Kumul, Zarit, Semiye, Gursap, Hukdeye, Sevar, Tahiye, Ozar</td>
+    </tr>
+    <tr>
+      <td>Vuran, Bahir, Urdi, Akir, Sam, Curec, Celkemi, Sula, Kari, Saba</td>
+      <td>Goley, Niyur, Menan, Apmat, Mindorlah, Azda, Sulki, Guka, Kime, Ergi</td>
+    </tr>
+    <tr>
+      <td>Radugi, Dukdur, Maha, Zusuf, Mayih, Nefah, Aysu, Selsem, Gabsun, Kahat</td>
+      <td>Zuraye, Rettime, Sengelli, Gulcime, Sortedi, Sugon, Zaki, Memra, Kunni, Hucan</td>
+    </tr>
+    <tr>
+      <td>Bercan, Habbat, Nultan, Ayiz, Yurev, Havgi, Bakes, Yaydil, Melif, Kalis</td>
+      <td>Gungu, Aybeden, Yavrun, Samine, Ruydar, Arnur, Hazti, Vuteton, Cahan, Talize</td>
+    </tr>
+    <tr>
+      <td>Baytul, Sicen, Ekep, Ale, Murgal, Kerif, Furem, Zihan, Kubza, Luse</td>
+      <td>Tekayu, Cabilatviye, Feyhan, Badabed, Sasir, Gugiki, Guhteviz, Sehhun, Sakser, Edana</td>
+    </tr>
+    <tr>
+      <td>Becer, Hase, Gahat, Betri, Sidar, Erzan, Gulsul, Benan, Kevay, Efere</td>
+      <td>Uzatil, Iren, Buhneyan, Sefdan, Vezhap, Fimnan, Bikan, Hirdar, Havdin, Hadrure</td>
+    </tr>
+    <tr>
+      <td>Suray, Bali, Guhan, Sele, Bezih, Zaza, Zacet, Saya, Dasen, Sevdam</td>
+      <td>Kurt, Iyarlan, Kagiy, Kiysan, Samay, Bervan, Safi, Fur, Zetir, Biheti</td>
+    </tr>
+    <tr>
+      <td>Beyfa, Fahat, Dula, Zatkun, Semelten, Gondur, Gulerun, Buysut, Gukpek, Alpfehatengel</td>
+      <td>Gocdan, Buhac, Sabip, Belet, Iben, Buhise, Aran, Semum, Sencin, Ceni</td>
+    </tr>
+    <tr>
+      <td>Aseye, Emra, Fera, Oyas, Zumul, Azel, Fular, Guli, Saner, Fasi</td>
+      <td>Urman, Erikmar, Buhan, Rahif, Hadul, Rosen, Daban, Hana, Rani, Zizasel</td>
+    </tr>
+    <tr>
+      <td>Cevli, Seylut, Sayih, Gece, Kaki, Dilsin, Semi, Aser, Sabil, Boylu</td>
+      <td>Heri, Soket, Serme, Selzikcan, Nurlay, Harfir, Seyyulga, Zeyar, Dilal, Gunsan</td>
+    </tr>
+  </tbody>
+</table>
+
+<h2 id="my-thoughts">
+<a class="anchor" href="#my-thoughts" aria-hidden="true"><span class="octicon octicon-link"></span></a>My thoughts</h2>
+<p>For me, the results when the model is trained with the 10K dataset sound more familiar. Probably that’s because I only heard a certain amount of Turkish names in my lifetime and when looking at the whole dataset, there are many many names which feel weird / funny to me :) Naturally, these types of weird sounding Turkish names are more present in the 3m dataset, so what my model generates may sound more like them.</p>
+
+<p>Also what made me happy is that all the generated names are at least pronouncible in Turkish. Normally in Turkish, no more than 2 consonants appear next to each other. A vowel is usually followed by a consonant and a consonant is usually followed by another consonant or a vowel. The model seems to have followed this rule with a high percentage of the names it generated so I’m at least interpreting this as a good result.</p>
+
+<p>And the most fun part of this doing this project was to loudly laugh at the funny names in the dataset or the names my model predicted. So at the very least, having a good laugh was worth the time I spent on this :]</p>
+
+<p>If you’re curious about the implementation, head over to <a href="https://github.com/aslisabanci/TurkishNameEngine">my repo on Github</a> and check out the details✌️</p>
+
+
+  </div><a class="u-url" href="/blog/deeplearning/2018/06/06/generating-random-turkish-first-names-with-a-super-basic-rnn.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>Atoms with consciousness, matter with curiosity</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/aslisabanci" title="aslisabanci"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/asli_sabanci" title="asli_sabanci"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>

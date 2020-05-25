@@ -1,26 +1,149 @@
-<p>I wanted to try building a model for the Avito Demand Prediction competition on Kaggle and I came across a few hurdles on the road, which taught me lots of new things. I wasn’t after a good score but I just wanted to build a neural network with Keras from end to end and get predictions from it.</p>
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Basic NN for the Avito Demand Prediction Competition on Kaggle | Aslı Sabancı</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Basic NN for the Avito Demand Prediction Competition on Kaggle" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I wanted to try building a model for the Avito Demand Prediction competition on Kaggle and I came across a few hurdles on the road, which taught me lots of new things. I wasn’t after a good score but I just wanted to build a neural network with Keras from end to end and get predictions from it." />
+<meta property="og:description" content="I wanted to try building a model for the Avito Demand Prediction competition on Kaggle and I came across a few hurdles on the road, which taught me lots of new things. I wasn’t after a good score but I just wanted to build a neural network with Keras from end to end and get predictions from it." />
+<link rel="canonical" href="https://aslisabanci.github.io/blog/kaggle/deeplearning/2018/06/28/basic-nn-for-the-avito-demand-prediction-competition-on-kaggle.html" />
+<meta property="og:url" content="https://aslisabanci.github.io/blog/kaggle/deeplearning/2018/06/28/basic-nn-for-the-avito-demand-prediction-competition-on-kaggle.html" />
+<meta property="og:site_name" content="Aslı Sabancı" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-06-28T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"I wanted to try building a model for the Avito Demand Prediction competition on Kaggle and I came across a few hurdles on the road, which taught me lots of new things. I wasn’t after a good score but I just wanted to build a neural network with Keras from end to end and get predictions from it.","mainEntityOfPage":{"@type":"WebPage","@id":"https://aslisabanci.github.io/blog/kaggle/deeplearning/2018/06/28/basic-nn-for-the-avito-demand-prediction-competition-on-kaggle.html"},"@type":"BlogPosting","url":"https://aslisabanci.github.io/blog/kaggle/deeplearning/2018/06/28/basic-nn-for-the-avito-demand-prediction-competition-on-kaggle.html","headline":"Basic NN for the Avito Demand Prediction Competition on Kaggle","dateModified":"2018-06-28T00:00:00-05:00","datePublished":"2018-06-28T00:00:00-05:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://aslisabanci.github.io/blog/feed.xml" title="Aslı Sabancı" /><link rel="shortcut icon" type="image/x-icon" href="/blog/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Basic NN for the Avito Demand Prediction Competition on Kaggle | Aslı Sabancı</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Basic NN for the Avito Demand Prediction Competition on Kaggle" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="I wanted to try building a model for the Avito Demand Prediction competition on Kaggle and I came across a few hurdles on the road, which taught me lots of new things. I wasn’t after a good score but I just wanted to build a neural network with Keras from end to end and get predictions from it." />
+<meta property="og:description" content="I wanted to try building a model for the Avito Demand Prediction competition on Kaggle and I came across a few hurdles on the road, which taught me lots of new things. I wasn’t after a good score but I just wanted to build a neural network with Keras from end to end and get predictions from it." />
+<link rel="canonical" href="https://aslisabanci.github.io/blog/kaggle/deeplearning/2018/06/28/basic-nn-for-the-avito-demand-prediction-competition-on-kaggle.html" />
+<meta property="og:url" content="https://aslisabanci.github.io/blog/kaggle/deeplearning/2018/06/28/basic-nn-for-the-avito-demand-prediction-competition-on-kaggle.html" />
+<meta property="og:site_name" content="Aslı Sabancı" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2018-06-28T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"I wanted to try building a model for the Avito Demand Prediction competition on Kaggle and I came across a few hurdles on the road, which taught me lots of new things. I wasn’t after a good score but I just wanted to build a neural network with Keras from end to end and get predictions from it.","mainEntityOfPage":{"@type":"WebPage","@id":"https://aslisabanci.github.io/blog/kaggle/deeplearning/2018/06/28/basic-nn-for-the-avito-demand-prediction-competition-on-kaggle.html"},"@type":"BlogPosting","url":"https://aslisabanci.github.io/blog/kaggle/deeplearning/2018/06/28/basic-nn-for-the-avito-demand-prediction-competition-on-kaggle.html","headline":"Basic NN for the Avito Demand Prediction Competition on Kaggle","dateModified":"2018-06-28T00:00:00-05:00","datePublished":"2018-06-28T00:00:00-05:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://aslisabanci.github.io/blog/feed.xml" title="Aslı Sabancı" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/blog/">Aslı Sabancı</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/blog/about/">About Me</a><a class="page-link" href="/blog/search/">Search</a><a class="page-link" href="/blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Basic NN for the Avito Demand Prediction Competition on Kaggle</h1><p class="page-description">I wanted to try building a model for the Avito Demand Prediction competition on Kaggle and I came across a few hurdles on the road, which taught me lots of new things. I wasn't after a good score but I just wanted to build a neural network with Keras from end to end and get predictions from it.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2018-06-28T00:00:00-05:00" itemprop="datePublished">
+        Jun 28, 2018
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      6 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/blog/categories/#kaggle">kaggle</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#deeplearning">deeplearning</a>
+        
+      
+      </p>
+    
+
+    </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#getting-image-features-from-vgg16">Getting image features from VGG16</a></li>
+<li class="toc-entry toc-h2"><a href="#cleaning-imputating-dropping-transforming-encoding-scaling">Cleaning, imputating, dropping, transforming, encoding, scaling</a></li>
+<li class="toc-entry toc-h2"><a href="#fitting-all-the-data-into-15gb-memory">Fitting all the data into 15GB memory</a></li>
+<li class="toc-entry toc-h2"><a href="#getting-nan-loss-during-training">Getting NAN loss during training</a></li>
+<li class="toc-entry toc-h2"><a href="#final-thoughts">Final thoughts</a></li>
+</ul><p>I wanted to try building a model for the Avito Demand Prediction competition on Kaggle and I came across a few hurdles on the road, which taught me lots of new things. I wasn’t after a good score but I just wanted to build a neural network with Keras from end to end and get predictions from it.</p>
 
 <p>So for this competition, we’re trying to predict demand for an online advertisement based on its full description (title, description, images, etc.) and its context.</p>
 
 <p>Roughly, I wanted to make use of the categorical features and a few continious features. I also wanted to the features of the images and for this I wanted to get their extracted features from VGG16.</p>
 
-<h2 id="getting-image-features-from-vgg16">Getting image features from VGG16</h2>
+<h2 id="getting-image-features-from-vgg16">
+<a class="anchor" href="#getting-image-features-from-vgg16" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting image features from VGG16</h2>
 <p>While I was trying to get the image feature extraction through VGG16, I found out that someone else on Kaggle has a kernel for that, so I added his two kernels’ outputs (one outputting the VGG16 features of the training data set images and the other one, the test data set images) as the data source of my own kernel and I could use these sparse output matrices within my script.</p>
 
 <p>So I dropped the image column of the datasets and appended these 512 features taken from VGG16, to my train and test data frames (during feeding my model batch by batch, as explained below, because the dense array version of these sparse data was taking lots of memory).</p>
 
-<h2 id="cleaning-imputating-dropping-transforming-encoding-scaling">Cleaning, imputating, dropping, transforming, encoding, scaling</h2>
+<h2 id="cleaning-imputating-dropping-transforming-encoding-scaling">
+<a class="anchor" href="#cleaning-imputating-dropping-transforming-encoding-scaling" aria-hidden="true"><span class="octicon octicon-link"></span></a>Cleaning, imputating, dropping, transforming, encoding, scaling</h2>
 <p>I dropped the columns I won’t use and imputated the datasets by filling in the NAN values accordingly. Then I transformed some features like the activation date to weekday and title and description (which were in Russian) to their word counts (I could have dealt with this information by extracting the text features through another established model, but I didn’t focus on that).</p>
 
 <p>I encoded the categorical columns with LabelEncoders and I scaled my continous features between 0 and 1, using the StandardScaler.</p>
 
-<h2 id="fitting-all-the-data-into-15gb-memory">Fitting all the data into 15GB memory</h2>
+<h2 id="fitting-all-the-data-into-15gb-memory">
+<a class="anchor" href="#fitting-all-the-data-into-15gb-memory" aria-hidden="true"><span class="octicon octicon-link"></span></a>Fitting all the data into 15GB memory</h2>
 <p>Of course, as a noob, I took my chances to see if I can feed all of this data at once to my model. Apparently and indeed not surprisingly, this wasn’t possible with the Kaggle kernels’ 15 GB memory limit. Then I learnt about the fit_generator method of Keras, which lets you feed your data to your model, spoon by spoon :] I’m pretty happy that I learnt about this method - hurdles along the way are the best teachers I think.</p>
 
-<h2 id="getting-nan-loss-during-training">Getting NAN loss during training</h2>
+<h2 id="getting-nan-loss-during-training">
+<a class="anchor" href="#getting-nan-loss-during-training" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting NAN loss during training</h2>
 <p>During the initial steps, my loss value was decreasing but then I started getting NAN loss, before the 1st epoch completed. This made me suspicious of my input data and I found out that I forgot to scale some of my continuous features. I did that and these NAN values were gone.</p>
 
-<h2 id="final-thoughts">Final thoughts</h2>
+<h2 id="final-thoughts">
+<a class="anchor" href="#final-thoughts" aria-hidden="true"><span class="octicon octicon-link"></span></a>Final thoughts</h2>
 
 <p>So this pretty basic model didn’t do super great in the competition but I at least succeeded in building an end to end model, getting its predictions and I learnt a lot from these small to medium scale hurdles :] 
 To improve this, I can think of what new features I can introduce with “feature engineering”, modify my hyperparameters or my network architecture or make use of some more features like the description for instance.</p>
@@ -230,3 +353,36 @@ To improve this, I can think of what new features I can introduce with “featur
 <span class="n">subm</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">'submission_adam.csv'</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
 </code></pre></div></div>
+
+  </div><a class="u-url" href="/blog/kaggle/deeplearning/2018/06/28/basic-nn-for-the-avito-demand-prediction-competition-on-kaggle.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>Atoms with consciousness, matter with curiosity</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/aslisabanci" title="aslisabanci"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/asli_sabanci" title="asli_sabanci"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
