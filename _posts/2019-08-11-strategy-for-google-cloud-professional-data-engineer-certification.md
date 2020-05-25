@@ -24,14 +24,14 @@ Setting timed goals will let you set aside dedicated time for your goal. As you 
 All the existing blog posts about how to prepare for this certification already mention the following courses. Here's what I think about them: 
 
 ### Google Cloud's own course set on Coursera
-![coursera](../../images/gcp/coursera.png)
+![coursera](images/gcp/coursera.png)
 
 I watched the video courses and I did the labs. Thinking back now, I could have progressed faster with these. Maybe do only a few labs to get a feeling of the Google Cloud platform, and skip most of them. Most labs contain repetitive tasks and I don't think there was a need to repeatedly do them for the purpose of exam preparation.
 
 I did the quizzes too. Besides the last course's longer quiz, which is supposed to serve as a practice exam, they were very easy. So, they were useless and they could have been prepared way better, to be more "teaching" (I wonder if there's a better word for this).
 
 ### Linux Academy
-![linuxacademy](../../images/gcp/linuxacademy.png)
+![linuxacademy](images/gcp/linuxacademy.png)
 
 I didn't watch most of the videos, as I felt like I did enough watching. I went through their [data dossier](https://www.lucidchart.com/documents/view/0ca44a63-4ea4-4d78-8367-2465512d21be/1). It is like the study notes of a hardworking student, so I found it quite useful. 
 
@@ -44,11 +44,11 @@ Needless to say; but whenever I didn't understand why I answered a question wron
 I went through the study cards of peer students on Linux Academy's platform. Again, I took the screenshots of the cards that I want to go over again and pasted them on my study document. By the way, not all the things written on the study cards were correct. Don't forget that these are prepared by peers who are also studying for the certification. So, take them with a grain of salt. When you feel uneasy about something you read, double-check it against the documentation.
 
 ## Dive deep into Google Documentation
-![documentation1](../../images/gcp/documentation1.png)
+![documentation1](images/gcp/documentation1.png)
 
 This was by far my best source to study for the exam. Yes, it is a bottomless pit. It doesn't have boundaries. You don't know how deep you should dive into. You don't know when to stop. You don't know which parts are important and which parts you can skip. So, you are by yourself and you will find the answers to these questions using your critical mind. 
 
-![documentation2](../../images/gcp/documentation2.png)
+![documentation2](images/gcp/documentation2.png)
 
 Besides the product pages, here's what I read and re-read in minimum:
 
@@ -67,7 +67,7 @@ Again, I took screenshots of the sections I deemed important and pasted them on 
 
 ## Read Google Solutions Blog Posts
 
-![gcpsolutions](../../images/gcp/gcpsolutions.png)
+![gcpsolutions](images/gcp/gcpsolutions.png)
 
 
 I read quite a few articles on [Google's Cloud Solutions Architecture Reference](https://gcp.solutions/) I found interesting, covering the GCP products of my interest. Some were migration stories, or performance improvement stories or integration stories between legacy and newer systems. I am interested in reading architecture articles in any case, so they broadened my horizon and I'm sure they somehow helped me with my understanding of the products.
@@ -75,7 +75,7 @@ I read quite a few articles on [Google's Cloud Solutions Architecture Reference]
 
 ## Listen to Google Cloud Platform Podcast
 
-![podcast](../../images/gcp/podcast.png)
+![podcast](images/gcp/podcast.png)
 
 I either bike to work or take the bus. Either way, my commutes are a good opportunity to listen to podcasts. I listen to them at home when my hands are busy but my ears are not.
 
