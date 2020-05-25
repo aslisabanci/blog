@@ -1,0 +1,232 @@
+<p>I wanted to try building a model for the Avito Demand Prediction competition on Kaggle and I came across a few hurdles on the road, which taught me lots of new things. I wasn’t after a good score but I just wanted to build a neural network with Keras from end to end and get predictions from it.</p>
+
+<p>So for this competition, we’re trying to predict demand for an online advertisement based on its full description (title, description, images, etc.) and its context.</p>
+
+<p>Roughly, I wanted to make use of the categorical features and a few continious features. I also wanted to the features of the images and for this I wanted to get their extracted features from VGG16.</p>
+
+<h2 id="getting-image-features-from-vgg16">Getting image features from VGG16</h2>
+<p>While I was trying to get the image feature extraction through VGG16, I found out that someone else on Kaggle has a kernel for that, so I added his two kernels’ outputs (one outputting the VGG16 features of the training data set images and the other one, the test data set images) as the data source of my own kernel and I could use these sparse output matrices within my script.</p>
+
+<p>So I dropped the image column of the datasets and appended these 512 features taken from VGG16, to my train and test data frames (during feeding my model batch by batch, as explained below, because the dense array version of these sparse data was taking lots of memory).</p>
+
+<h2 id="cleaning-imputating-dropping-transforming-encoding-scaling">Cleaning, imputating, dropping, transforming, encoding, scaling</h2>
+<p>I dropped the columns I won’t use and imputated the datasets by filling in the NAN values accordingly. Then I transformed some features like the activation date to weekday and title and description (which were in Russian) to their word counts (I could have dealt with this information by extracting the text features through another established model, but I didn’t focus on that).</p>
+
+<p>I encoded the categorical columns with LabelEncoders and I scaled my continous features between 0 and 1, using the StandardScaler.</p>
+
+<h2 id="fitting-all-the-data-into-15gb-memory">Fitting all the data into 15GB memory</h2>
+<p>Of course, as a noob, I took my chances to see if I can feed all of this data at once to my model. Apparently and indeed not surprisingly, this wasn’t possible with the Kaggle kernels’ 15 GB memory limit. Then I learnt about the fit_generator method of Keras, which lets you feed your data to your model, spoon by spoon :] I’m pretty happy that I learnt about this method - hurdles along the way are the best teachers I think.</p>
+
+<h2 id="getting-nan-loss-during-training">Getting NAN loss during training</h2>
+<p>During the initial steps, my loss value was decreasing but then I started getting NAN loss, before the 1st epoch completed. This made me suspicious of my input data and I found out that I forgot to scale some of my continuous features. I did that and these NAN values were gone.</p>
+
+<h2 id="final-thoughts">Final thoughts</h2>
+
+<p>So this pretty basic model didn’t do super great in the competition but I at least succeeded in building an end to end model, getting its predictions and I learnt a lot from these small to medium scale hurdles :] 
+To improve this, I can think of what new features I can introduce with “feature engineering”, modify my hyperparameters or my network architecture or make use of some more features like the description for instance.</p>
+
+<p>So here is my script but of course it won’t run properly unless you run it on a Kaggle kernel by adding the necessary datasets. If you spot any mistakes, you are more than welcome to point those out and let me learn from you!</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="n">pd</span>
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">sparse</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">LabelEncoder</span>
+<span class="kn">from</span> <span class="nn">keras.models</span> <span class="kn">import</span> <span class="n">Model</span>
+<span class="kn">from</span> <span class="nn">keras.callbacks</span> <span class="kn">import</span> <span class="n">EarlyStopping</span><span class="p">,</span> <span class="n">ModelCheckpoint</span>
+<span class="kn">from</span> <span class="nn">keras.layers</span> <span class="kn">import</span> <span class="n">Embedding</span><span class="p">,</span> <span class="n">Dense</span><span class="p">,</span> <span class="n">Input</span><span class="p">,</span> <span class="n">concatenate</span><span class="p">,</span> <span class="n">Flatten</span><span class="p">,</span> <span class="n">Dropout</span><span class="p">,</span> <span class="n">BatchNormalization</span>
+<span class="kn">from</span> <span class="nn">keras.optimizers</span> <span class="kn">import</span> <span class="n">adam</span>
+<span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">losses</span>
+<span class="kn">from</span> <span class="nn">keras</span> <span class="kn">import</span> <span class="n">metrics</span>
+
+
+<span class="k">def</span> <span class="nf">load_data</span><span class="p">():</span>
+	<span class="n">train_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">"../input/avito-demand-prediction/train.csv"</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s">"activation_date"</span><span class="p">])</span>
+	<span class="n">test_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">"../input/avito-demand-prediction/test.csv"</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="p">[</span><span class="s">"activation_date"</span><span class="p">])</span>
+
+	<span class="n">train_data</span><span class="p">[</span><span class="s">'activation_date'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span>
+		<span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">train_data</span><span class="p">[</span><span class="s">'activation_date'</span><span class="p">])</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">weekday</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+	<span class="n">test_data</span><span class="p">[</span><span class="s">'activation_date'</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expand_dims</span><span class="p">(</span>
+		<span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">test_data</span><span class="p">[</span><span class="s">'activation_date'</span><span class="p">])</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">weekday</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">int32</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span>
+
+	<span class="n">y_col</span> <span class="o">=</span> <span class="s">'deal_probability'</span>
+
+	<span class="k">return</span> <span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">,</span> <span class="n">y_col</span>
+
+
+<span class="k">def</span> <span class="nf">fill_na</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">):</span>
+	<span class="n">train_data</span><span class="p">[</span><span class="s">'image_top_1'</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">3067</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+	<span class="n">test_data</span><span class="p">[</span><span class="s">'image_top_1'</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="mi">3067</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+	<span class="n">train_data</span><span class="p">[</span><span class="s">'item_seq_number'</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+	<span class="n">test_data</span><span class="p">[</span><span class="s">'item_seq_number'</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+	<span class="n">train_data</span><span class="p">[</span><span class="s">'price'</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+	<span class="n">test_data</span><span class="p">[</span><span class="s">'price'</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=-</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+	<span class="n">train_data</span><span class="p">[</span><span class="s">'param_1'</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s">'_NA_'</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+	<span class="n">test_data</span><span class="p">[</span><span class="s">'param_1'</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s">'_NA_'</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+	<span class="n">train_data</span><span class="p">[</span><span class="s">'param_2'</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s">'_NA_'</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+	<span class="n">test_data</span><span class="p">[</span><span class="s">'param_2'</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s">'_NA_'</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+
+	<span class="n">train_data</span><span class="p">[</span><span class="s">'param_3'</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s">'_NA_'</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+	<span class="n">test_data</span><span class="p">[</span><span class="s">'param_3'</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="n">value</span><span class="o">=</span><span class="s">'_NA_'</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span>
+
+
+<span class="k">def</span> <span class="nf">drop_unwanted</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">):</span>
+	<span class="n">train_data</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s">'item_id'</span><span class="p">,</span> <span class="s">'user_id'</span><span class="p">,</span> <span class="s">'image'</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+	<span class="n">test_data</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s">'item_id'</span><span class="p">,</span> <span class="s">'user_id'</span><span class="p">,</span> <span class="s">'image'</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span>
+
+
+<span class="k">def</span> <span class="nf">encode_cat_columns</span><span class="p">(</span><span class="n">all_data</span><span class="p">):</span>
+	<span class="n">cat_cols</span> <span class="o">=</span> <span class="p">[</span><span class="s">'region'</span><span class="p">,</span> <span class="s">'parent_category_name'</span><span class="p">,</span> <span class="s">'category_name'</span><span class="p">,</span> <span class="s">'city'</span><span class="p">,</span> <span class="s">'user_type'</span><span class="p">,</span> <span class="s">'image_top_1'</span><span class="p">,</span> <span class="s">'param_1'</span><span class="p">,</span>
+	            <span class="s">'param_2'</span><span class="p">,</span> <span class="s">'param_3'</span><span class="p">]</span>
+
+	<span class="n">le_encoders</span> <span class="o">=</span> <span class="p">{</span><span class="n">x</span><span class="p">:</span> <span class="n">LabelEncoder</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">cat_cols</span><span class="p">}</span>
+	<span class="n">label_enc_cols</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">v</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">all_data</span><span class="p">[</span><span class="n">k</span><span class="p">])</span> <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">le_encoders</span><span class="o">.</span><span class="n">items</span><span class="p">()}</span>
+
+	<span class="k">return</span> <span class="n">le_encoders</span><span class="p">,</span> <span class="n">label_enc_cols</span>
+
+
+<span class="k">def</span> <span class="nf">transform_title_description</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">):</span>
+	<span class="n">train_data</span><span class="p">[</span><span class="s">'title'</span><span class="p">]</span> <span class="o">=</span> <span class="n">train_data</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="nb">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">' '</span><span class="p">)))</span>
+	<span class="n">train_data</span><span class="p">[</span><span class="s">'description'</span><span class="p">]</span> <span class="o">=</span> <span class="n">train_data</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="nb">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">' '</span><span class="p">)))</span>
+
+	<span class="n">test_data</span><span class="p">[</span><span class="s">'title'</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_data</span><span class="o">.</span><span class="n">title</span><span class="o">.</span><span class="nb">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">' '</span><span class="p">)))</span>
+	<span class="n">test_data</span><span class="p">[</span><span class="s">'description'</span><span class="p">]</span> <span class="o">=</span> <span class="n">test_data</span><span class="o">.</span><span class="n">description</span><span class="o">.</span><span class="nb">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="nb">len</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">x</span><span class="p">)</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s">' '</span><span class="p">)))</span>
+	<span class="k">return</span> <span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span>
+
+
+<span class="k">def</span> <span class="nf">scale_num_cols</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">):</span>
+	<span class="n">stdScaler</span> <span class="o">=</span> <span class="n">StandardScaler</span><span class="p">()</span>
+	<span class="n">train_data</span><span class="p">[[</span><span class="s">'price'</span><span class="p">,</span> <span class="s">'item_seq_number'</span><span class="p">,</span> <span class="s">'title'</span><span class="p">,</span> <span class="s">'description'</span><span class="p">]]</span> <span class="o">=</span> <span class="n">stdScaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">train_data</span><span class="p">[[</span><span class="s">'price'</span><span class="p">,</span> <span class="s">'item_seq_number'</span><span class="p">,</span> <span class="s">'title'</span><span class="p">,</span> <span class="s">'description'</span><span class="p">]])</span>
+	<span class="n">test_data</span><span class="p">[[</span><span class="s">'price'</span><span class="p">,</span> <span class="s">'item_seq_number'</span><span class="p">,</span> <span class="s">'title'</span><span class="p">,</span> <span class="s">'description'</span><span class="p">]]</span> <span class="o">=</span> <span class="n">stdScaler</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">test_data</span><span class="p">[[</span><span class="s">'price'</span><span class="p">,</span> <span class="s">'item_seq_number'</span><span class="p">,</span> <span class="s">'title'</span><span class="p">,</span> <span class="s">'description'</span><span class="p">]])</span>
+	<span class="k">return</span> <span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span>
+
+
+<span class="k">def</span> <span class="nf">load_VGG16_img_features</span><span class="p">():</span>
+	<span class="n">train_img_features</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">load_npz</span><span class="p">(</span><span class="s">'../input/vgg16-train-features/features.npz'</span><span class="p">)</span>
+	<span class="n">test_img_features</span> <span class="o">=</span> <span class="n">sparse</span><span class="o">.</span><span class="n">load_npz</span><span class="p">(</span><span class="s">'../input/vgg16-test-features/features.npz'</span><span class="p">)</span>
+	<span class="k">return</span> <span class="n">train_img_features</span><span class="p">,</span> <span class="n">test_img_features</span>
+
+
+<span class="k">def</span> <span class="nf">split_train_validation</span><span class="p">(</span><span class="n">train_data</span><span class="p">):</span>
+	<span class="n">val_split</span> <span class="o">=</span> <span class="mf">0.15</span>
+	<span class="n">val_ix</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">rint</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">train_data</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="mf">1.</span> <span class="o">-</span> <span class="n">val_split</span><span class="p">)))</span>
+
+	<span class="n">t_split_df</span> <span class="o">=</span> <span class="n">train_data</span><span class="p">[:</span><span class="n">val_ix</span><span class="p">]</span>
+	<span class="n">v_split_df</span> <span class="o">=</span> <span class="n">train_data</span><span class="p">[</span><span class="n">val_ix</span><span class="p">:]</span>
+
+	<span class="n">image_t_split_df</span> <span class="o">=</span> <span class="n">train_img_features</span><span class="p">[:</span><span class="n">val_ix</span><span class="p">]</span>
+	<span class="n">image_v_split_df</span> <span class="o">=</span> <span class="n">train_img_features</span><span class="p">[</span><span class="n">val_ix</span><span class="p">:]</span>
+
+	<span class="k">return</span> <span class="n">t_split_df</span><span class="p">,</span> <span class="n">v_split_df</span><span class="p">,</span> <span class="n">image_t_split_df</span><span class="p">,</span> <span class="n">image_v_split_df</span>
+
+
+<span class="k">def</span> <span class="nf">gen_samples</span><span class="p">(</span><span class="n">in_df</span><span class="p">,</span> <span class="n">img_df</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">loss_name</span><span class="p">):</span>
+
+	<span class="n">samples_per_epoch</span> <span class="o">=</span> <span class="n">in_df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+	<span class="n">number_of_batches</span> <span class="o">=</span> <span class="n">samples_per_epoch</span> <span class="o">/</span> <span class="n">batch_size</span>
+	<span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+	<span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+
+		<span class="k">if</span> <span class="n">batch_size</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+			<span class="n">out_df</span> <span class="o">=</span> <span class="n">in_df</span>
+
+		<span class="k">else</span><span class="p">:</span>
+			<span class="n">sub_img_frame</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">img_df</span><span class="p">[</span><span class="n">batch_size</span> <span class="o">*</span> <span class="n">counter</span><span class="p">:</span><span class="n">batch_size</span> <span class="o">*</span> <span class="p">(</span><span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span><span class="o">.</span><span class="n">todense</span><span class="p">())</span>
+
+			<span class="n">sub_img_frame</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s">'img_'</span> <span class="o">+</span> <span class="nb">str</span><span class="p">(</span><span class="n">col</span><span class="p">)</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">sub_img_frame</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+
+			<span class="n">out_df</span> <span class="o">=</span> <span class="n">in_df</span><span class="p">[</span><span class="n">batch_size</span> <span class="o">*</span> <span class="n">counter</span><span class="p">:</span><span class="n">batch_size</span> <span class="o">*</span> <span class="p">(</span><span class="n">counter</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)]</span>
+
+			<span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">sub_img_frame</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+				<span class="n">out_df</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">out_df</span><span class="o">.</span><span class="n">columns</span><span class="p">),</span> <span class="n">col</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">sub_img_frame</span><span class="p">[</span><span class="n">col</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">out_df</span><span class="o">.</span><span class="n">index</span><span class="p">))</span>
+
+		<span class="n">feed_dict</span> <span class="o">=</span> <span class="p">{</span><span class="n">col_name</span><span class="p">:</span> <span class="n">le_encoders</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">out_df</span><span class="p">[</span><span class="n">col_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span> <span class="k">for</span> <span class="n">col_name</span> <span class="ow">in</span> <span class="n">cat_cols</span><span class="p">}</span>
+
+		<span class="n">cont_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">out_df</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> <span class="s">'img_'</span> <span class="ow">in</span> <span class="n">x</span><span class="p">]</span>
+		<span class="n">cont_cols</span><span class="o">.</span><span class="n">extend</span><span class="p">([</span><span class="s">'price'</span><span class="p">,</span> <span class="s">'item_seq_number'</span><span class="p">,</span> <span class="s">'title'</span><span class="p">,</span> <span class="s">'description'</span><span class="p">])</span>
+		<span class="n">feed_dict</span><span class="p">[</span><span class="s">'continuous'</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_df</span><span class="p">[</span><span class="n">cont_cols</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+		<span class="n">counter</span> <span class="o">+=</span> <span class="mi">1</span>
+
+		<span class="k">yield</span> <span class="n">feed_dict</span><span class="p">,</span> <span class="n">out_df</span><span class="p">[</span><span class="n">loss_name</span><span class="p">]</span><span class="o">.</span><span class="n">values</span>
+
+		<span class="k">if</span> <span class="n">counter</span> <span class="o">&lt;=</span> <span class="n">number_of_batches</span><span class="p">:</span>
+			<span class="n">counter</span> <span class="o">=</span> <span class="mi">0</span>
+
+
+<span class="k">def</span> <span class="nf">root_mean_squared_error</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+	<span class="k">return</span> <span class="n">K</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">K</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">K</span><span class="o">.</span><span class="n">square</span><span class="p">(</span><span class="n">y_pred</span> <span class="o">-</span> <span class="n">y_true</span><span class="p">)))</span>
+
+
+<span class="k">def</span> <span class="nf">build_model</span><span class="p">(</span><span class="n">label_enc_cols</span><span class="p">):</span>
+	<span class="n">all_embeddings</span><span class="p">,</span> <span class="n">all_inputs</span> <span class="o">=</span> <span class="p">[],</span> <span class="p">[]</span>
+
+	<span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">label_enc_cols</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+		<span class="n">in_val</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span><span class="p">,),</span> <span class="n">name</span> <span class="o">=</span> <span class="n">key</span><span class="p">)</span>
+		<span class="n">all_embeddings</span> <span class="o">+=</span> <span class="p">[</span><span class="n">Flatten</span><span class="p">()(</span><span class="n">Embedding</span><span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="nb">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="p">(</span><span class="n">val</span><span class="o">.</span><span class="nb">max</span><span class="p">()</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)(</span><span class="n">in_val</span><span class="p">))]</span>
+		<span class="n">all_inputs</span> <span class="o">+=</span> <span class="p">[</span><span class="n">in_val</span><span class="p">]</span>
+
+	<span class="n">concat_emb_layer</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">(</span><span class="n">all_embeddings</span><span class="p">)</span>
+	<span class="n">bn_emb</span> <span class="o">=</span> <span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">concat_emb_layer</span><span class="p">)</span>
+	<span class="n">emb_layer</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">)(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)(</span><span class="n">bn_emb</span><span class="p">))</span>
+
+	<span class="n">cont_input</span> <span class="o">=</span> <span class="n">Input</span><span class="p">(</span><span class="n">shape</span> <span class="o">=</span> <span class="p">(</span><span class="mi">516</span><span class="p">,),</span> <span class="n">name</span> <span class="o">=</span> <span class="s">'continuous'</span><span class="p">)</span>
+	<span class="n">bn_cont</span> <span class="o">=</span> <span class="n">BatchNormalization</span><span class="p">()(</span><span class="n">cont_input</span><span class="p">)</span>
+	<span class="n">cont_feature_layer</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">)(</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)(</span><span class="n">bn_cont</span><span class="p">))</span>
+
+	<span class="n">full_concat_layer</span> <span class="o">=</span> <span class="n">concatenate</span><span class="p">([</span><span class="n">emb_layer</span><span class="p">,</span> <span class="n">cont_feature_layer</span><span class="p">])</span>
+	<span class="n">full_reduction</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'relu'</span><span class="p">)(</span><span class="n">full_concat_layer</span><span class="p">)</span>
+
+	<span class="n">out_layer</span> <span class="o">=</span> <span class="n">Dense</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">activation</span> <span class="o">=</span> <span class="s">'sigmoid'</span><span class="p">)(</span><span class="n">full_reduction</span><span class="p">)</span>
+	<span class="n">model</span> <span class="o">=</span> <span class="n">Model</span><span class="p">(</span><span class="n">inputs</span> <span class="o">=</span> <span class="n">all_inputs</span> <span class="o">+</span> <span class="p">[</span><span class="n">cont_input</span><span class="p">],</span> <span class="n">outputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">out_layer</span><span class="p">])</span>
+
+	<span class="k">return</span> <span class="n">model</span>
+
+
+
+<span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">,</span> <span class="n">y_col</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">()</span>
+<span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span> <span class="o">=</span> <span class="n">fill_na</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">)</span>
+<span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span> <span class="o">=</span> <span class="n">drop_unwanted</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">)</span>
+<span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span> <span class="o">=</span> <span class="n">transform_title_description</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">)</span>
+
+<span class="n">all_data</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">],</span> <span class="n">sort</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+<span class="n">le_encoders</span><span class="p">,</span> <span class="n">label_enc_cols</span> <span class="o">=</span> <span class="n">encode_cat_columns</span><span class="p">(</span><span class="n">all_data</span><span class="p">)</span>
+
+<span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span> <span class="o">=</span> <span class="n">scale_num_cols</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">test_data</span><span class="p">)</span>
+
+<span class="n">train_img_features</span><span class="p">,</span> <span class="n">test_img_features</span> <span class="o">=</span> <span class="n">load_VGG16_img_features</span><span class="p">()</span>
+
+<span class="n">t_split_df</span><span class="p">,</span> <span class="n">v_split_df</span><span class="p">,</span> <span class="n">image_t_split_df</span><span class="p">,</span> <span class="n">image_v_split_df</span> <span class="o">=</span> <span class="n">split_train_validation</span><span class="p">(</span><span class="n">train_data</span><span class="p">)</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">build_model</span><span class="p">(</span><span class="n">label_enc_cols</span><span class="p">)</span>
+
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizers</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">lr</span> <span class="o">=</span> <span class="mf">0.0005</span><span class="p">,</span> <span class="n">beta_1</span> <span class="o">=</span> <span class="mf">0.9</span><span class="p">,</span> <span class="n">beta_2</span> <span class="o">=</span> <span class="mf">0.999</span><span class="p">,</span> <span class="n">epsilon</span> <span class="o">=</span> <span class="mf">0.1</span><span class="p">,</span> <span class="n">decay</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">,</span> <span class="n">amsgrad</span> <span class="o">=</span> <span class="bp">False</span><span class="p">)</span>
+<span class="n">model</span><span class="o">.</span><span class="nb">compile</span><span class="p">(</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">loss</span> <span class="o">=</span> <span class="n">root_mean_squared_error</span><span class="p">,</span> <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="n">root_mean_squared_error</span><span class="p">])</span>
+
+<span class="n">checkpoint</span> <span class="o">=</span> <span class="n">ModelCheckpoint</span><span class="p">(</span><span class="s">'best_weights.hdf5'</span><span class="p">,</span> <span class="n">monitor</span> <span class="o">=</span> <span class="s">'val_loss'</span><span class="p">,</span> <span class="n">verbose</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">save_best_only</span> <span class="o">=</span> <span class="bp">True</span><span class="p">)</span>
+<span class="n">early</span> <span class="o">=</span> <span class="n">EarlyStopping</span><span class="p">(</span><span class="n">patience</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="n">mode</span> <span class="o">=</span> <span class="s">'min'</span><span class="p">)</span>
+
+<span class="n">batch_size</span> <span class="o">=</span> <span class="mi">64</span>
+<span class="n">model</span><span class="o">.</span><span class="n">fit_generator</span><span class="p">(</span><span class="n">gen_samples</span><span class="p">(</span><span class="n">t_split_df</span><span class="p">,</span> <span class="n">image_t_split_df</span><span class="p">,</span> <span class="n">batch_size</span><span class="p">,</span> <span class="n">y_col</span><span class="p">),</span>
+                    <span class="n">epochs</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
+                    <span class="n">steps_per_epoch</span> <span class="o">=</span> <span class="n">t_split_df</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">batch_size</span><span class="p">,</span>
+                    <span class="n">validation_data</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">gen_samples</span><span class="p">(</span><span class="n">v_split_df</span><span class="p">,</span> <span class="n">image_v_split_df</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">y_col</span><span class="p">)),</span>
+                    <span class="n">validation_steps</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span>
+                    <span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">checkpoint</span><span class="p">,</span> <span class="n">early</span><span class="p">])</span>
+
+<span class="n">test_vars</span><span class="p">,</span> <span class="n">test_id</span> <span class="o">=</span> <span class="nb">next</span><span class="p">(</span><span class="n">gen_samples</span><span class="p">(</span><span class="n">test_data</span><span class="p">,</span> <span class="n">test_img_features</span><span class="p">,</span> <span class="n">test_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">loss_name</span> <span class="o">=</span> <span class="s">''</span><span class="p">))</span>
+<span class="n">model</span><span class="o">.</span><span class="n">load_weights</span><span class="p">(</span><span class="s">'best_weights.hdf5'</span><span class="p">)</span>
+<span class="n">preds</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">test_vars</span><span class="p">)</span>
+
+<span class="n">subm</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s">"../input/avito-demand-prediction/sample_submission.csv"</span><span class="p">)</span>
+<span class="n">subm</span><span class="p">[</span><span class="s">'deal_probability'</span><span class="p">]</span> <span class="o">=</span> <span class="n">preds</span>
+<span class="n">subm</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s">'submission_adam.csv'</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
+
+</code></pre></div></div>

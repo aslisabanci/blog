@@ -1,0 +1,32 @@
+<p>If you want see the graph of your Lambda function’s specific log messages’ count and create a CloudWatch dashboard widget out of it, you can have this setup:</p>
+
+<p>Let’s have an example: Your Lambda function logs down a message like “Performed {x} operation for input {y}” and you want to watch when this happens, over a graph (widget) on a CloudWatch dashboard.</p>
+
+<ul>
+  <li>Open up your dashboard and click on Add Widget -&gt; Query Results and then Configure.</li>
+</ul>
+
+<p><img src="../../images/lambda-cloudwatch/widget.png" alt="query" /></p>
+
+<ul>
+  <li>
+    <p>Select your log group, which should be like <code class="highlighter-rouge">/aws/lambda/{your_lambda_name}</code></p>
+  </li>
+  <li>
+    <p>Put in your query, which is the most exciting part. Below is an example when you want to count the stats of a specific operation for your case. If you want to count the total number of times that this log message appears, then omit the filter part where you filter for the specific operation.</p>
+  </li>
+</ul>
+
+<p><code class="highlighter-rouge">fields @message 
+| filter @message like /operation for input/ 
+| parse @message /\\[(?&lt;level&gt;\\S+)\\]\\s(\\S+)\\s(\\S+)\\s(?&lt;op_name&gt;\\S+) operation for input (?&lt;input&gt;\\S+)/ 
+| filter op_name == {op_name_you_want_to_watch} 
+| stats count(op_name) by bin(5m)</code></p>
+
+<p><img src="../../images/lambda-cloudwatch/query.png" alt="query" /></p>
+
+<ul>
+  <li>Run your query and if all looks fine, also check the Visualization.</li>
+</ul>
+
+<p>Then create your widget and enjoy watching your graph.</p>
