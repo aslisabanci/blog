@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://aslisabanci.github.io/blog/feed.xml" rel="self" type="application/atom+xml" /><link href="https://aslisabanci.github.io/blog/" rel="alternate" type="text/html" /><updated>2020-05-25T12:25:15-05:00</updated><id>https://aslisabanci.github.io/blog/feed.xml</id><title type="html">Aslı Sabancı</title><subtitle>Atoms with consciousness, matter with curiosity</subtitle><entry><title type="html">How to Filter AWS Lambda Log Messages for CloudWatch Dashboard Widget</title><link href="https://aslisabanci.github.io/blog/aws/data-engineering/lambda/cloudwatch/2019/10/31/filter_lambda_logs.html" rel="alternate" type="text/html" title="How to Filter AWS Lambda Log Messages for CloudWatch Dashboard Widget" /><published>2019-10-31T00:00:00-05:00</published><updated>2019-10-31T00:00:00-05:00</updated><id>https://aslisabanci.github.io/blog/aws/data-engineering/lambda/cloudwatch/2019/10/31/filter_lambda_logs</id><content type="html" xml:base="https://aslisabanci.github.io/blog/aws/data-engineering/lambda/cloudwatch/2019/10/31/filter_lambda_logs.html">&lt;p&gt;If you want see the graph of your Lambda function’s specific log messages’ count and create a CloudWatch dashboard widget out of it, you can have this setup:&lt;/p&gt;
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.0.0">Jekyll</generator><link href="https://aslisabanci.github.io/blog/feed.xml" rel="self" type="application/atom+xml" /><link href="https://aslisabanci.github.io/blog/" rel="alternate" type="text/html" /><updated>2020-05-25T18:57:25-05:00</updated><id>https://aslisabanci.github.io/blog/feed.xml</id><title type="html">Aslı Sabancı</title><subtitle>Atoms with consciousness, matter with curiosity</subtitle><entry><title type="html">How to Filter AWS Lambda Log Messages for CloudWatch Dashboard Widget</title><link href="https://aslisabanci.github.io/blog/aws/data-engineering/lambda/cloudwatch/2019/10/31/filter_lambda_logs.html" rel="alternate" type="text/html" title="How to Filter AWS Lambda Log Messages for CloudWatch Dashboard Widget" /><published>2019-10-31T00:00:00-05:00</published><updated>2019-10-31T00:00:00-05:00</updated><id>https://aslisabanci.github.io/blog/aws/data-engineering/lambda/cloudwatch/2019/10/31/filter_lambda_logs</id><content type="html" xml:base="https://aslisabanci.github.io/blog/aws/data-engineering/lambda/cloudwatch/2019/10/31/filter_lambda_logs.html">&lt;p&gt;If you want see the graph of your Lambda function’s specific log messages’ count and create a CloudWatch dashboard widget out of it, you can have this setup:&lt;/p&gt;
 
 &lt;p&gt;Let’s have an example: Your Lambda function logs down a message like “Performed {x} operation for input {y}” and you want to watch when this happens, over a graph (widget) on a CloudWatch dashboard.&lt;/p&gt;
 
@@ -44,14 +44,14 @@
 &lt;p&gt;All the existing blog posts about how to prepare for this certification already mention the following courses. Here’s what I think about them:&lt;/p&gt;
 
 &lt;h3 id=&quot;google-clouds-own-course-set-on-coursera&quot;&gt;Google Cloud’s own course set on Coursera&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&quot;images/gcp/coursera.png&quot; alt=&quot;coursera&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../images/gcp/coursera.png&quot; alt=&quot;coursera&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;I watched the video courses and I did the labs. Thinking back now, I could have progressed faster with these. Maybe do only a few labs to get a feeling of the Google Cloud platform, and skip most of them. Most labs contain repetitive tasks and I don’t think there was a need to repeatedly do them for the purpose of exam preparation.&lt;/p&gt;
 
 &lt;p&gt;I did the quizzes too. Besides the last course’s longer quiz, which is supposed to serve as a practice exam, they were very easy. So, they were useless and they could have been prepared way better, to be more “teaching” (I wonder if there’s a better word for this).&lt;/p&gt;
 
 &lt;h3 id=&quot;linux-academy&quot;&gt;Linux Academy&lt;/h3&gt;
-&lt;p&gt;&lt;img src=&quot;images/gcp/linuxacademy.png&quot; alt=&quot;linuxacademy&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../images/gcp/linuxacademy.png&quot; alt=&quot;linuxacademy&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;I didn’t watch most of the videos, as I felt like I did enough watching. I went through their &lt;a href=&quot;https://www.lucidchart.com/documents/view/0ca44a63-4ea4-4d78-8367-2465512d21be/1&quot;&gt;data dossier&lt;/a&gt;. It is like the study notes of a hardworking student, so I found it quite useful.&lt;/p&gt;
 
@@ -64,11 +64,11 @@
 &lt;p&gt;I went through the study cards of peer students on Linux Academy’s platform. Again, I took the screenshots of the cards that I want to go over again and pasted them on my study document. By the way, not all the things written on the study cards were correct. Don’t forget that these are prepared by peers who are also studying for the certification. So, take them with a grain of salt. When you feel uneasy about something you read, double-check it against the documentation.&lt;/p&gt;
 
 &lt;h2 id=&quot;dive-deep-into-google-documentation&quot;&gt;Dive deep into Google Documentation&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&quot;images/gcp/documentation1.png&quot; alt=&quot;documentation1&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../images/gcp/documentation1.png&quot; alt=&quot;documentation1&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;This was by far my best source to study for the exam. Yes, it is a bottomless pit. It doesn’t have boundaries. You don’t know how deep you should dive into. You don’t know when to stop. You don’t know which parts are important and which parts you can skip. So, you are by yourself and you will find the answers to these questions using your critical mind.&lt;/p&gt;
 
-&lt;p&gt;&lt;img src=&quot;images/gcp/documentation2.png&quot; alt=&quot;documentation2&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../images/gcp/documentation2.png&quot; alt=&quot;documentation2&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;Besides the product pages, here’s what I read and re-read in minimum:&lt;/p&gt;
 
@@ -88,13 +88,13 @@
 
 &lt;h2 id=&quot;read-google-solutions-blog-posts&quot;&gt;Read Google Solutions Blog Posts&lt;/h2&gt;
 
-&lt;p&gt;&lt;img src=&quot;images/gcp/gcpsolutions.png&quot; alt=&quot;gcpsolutions&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../images/gcp/gcpsolutions.png&quot; alt=&quot;gcpsolutions&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;I read quite a few articles on &lt;a href=&quot;https://gcp.solutions/&quot;&gt;Google’s Cloud Solutions Architecture Reference&lt;/a&gt; I found interesting, covering the GCP products of my interest. Some were migration stories, or performance improvement stories or integration stories between legacy and newer systems. I am interested in reading architecture articles in any case, so they broadened my horizon and I’m sure they somehow helped me with my understanding of the products.&lt;/p&gt;
 
 &lt;h2 id=&quot;listen-to-google-cloud-platform-podcast&quot;&gt;Listen to Google Cloud Platform Podcast&lt;/h2&gt;
 
-&lt;p&gt;&lt;img src=&quot;images/gcp/podcast.png&quot; alt=&quot;podcast&quot; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&quot;../images/gcp/podcast.png&quot; alt=&quot;podcast&quot; /&gt;&lt;/p&gt;
 
 &lt;p&gt;I either bike to work or take the bus. Either way, my commutes are a good opportunity to listen to podcasts. I listen to them at home when my hands are busy but my ears are not.&lt;/p&gt;
 
