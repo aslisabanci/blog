@@ -1,15 +1,10 @@
 ---
+toc: true
+layout: post
 title: Kaggle Meetup
-author: ~
-date: '2018-06-05'
-slug: kaggle-munich-meetup
-image: images/meetup/thumbnail-meetup.png
-categories: []
-tags:
+categories:
   - kaggle
   - meetup
-  - munich
-authors: []
 description: "Yesterday was my third week in Munich and to join the community of the city's machine learning peeps, I went to Kaggle Munich's meetup, held at the Google office."
 ---
 

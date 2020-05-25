@@ -1,14 +1,10 @@
 ---
+toc: true
+layout: post
 title: Basic NN for the Avito Demand Prediction Competition on Kaggle
-author: ~
-date: '2018-06-28'
-slug: basic-nn-for-the-avito-demand-prediction-competition-on-kaggle
-image: images/kaggle/thumbnail-kaggle.png
-categories: []
-tags:
+categories:
   - kaggle
   - deeplearning
-authors: []
 description: "I wanted to try building a model for the Avito Demand Prediction competition on Kaggle and I came across a few hurdles on the road, which taught me lots of new things. I wasn't after a good score but I just wanted to build a neural network with Keras from end to end and get predictions from it."
 ---
 
