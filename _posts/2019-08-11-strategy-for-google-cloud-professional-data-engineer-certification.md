@@ -1,6 +1,7 @@
 ---
 toc: true
 layout: post
+sticky_rank: 1
 title: My Strategy For The Google Cloud Professional Data Engineer Certification
 image: images/gcp/thumbnail-gcp.png
 categories: [google-cloud, data-engineering]
