@@ -2,7 +2,7 @@
 toc: true
 layout: post
 sticky_rank: 1
-title: My Strategy For The Google Cloud Professional Data Engineer Certification
+title: My Strategy For Getting My Google Cloud Professional Data Engineer Certification
 image: images/gcp/thumbnail-gcp.png
 categories: [google-cloud, data-engineering]
 description: "Google's Professional Data Engineer certification exam is said to be difficult. I didn't believe it much until I took the exam myself. Now I also confirm that it's indeed a difficult exam and I don't think it can be achieved without thorough preparation and a solid engineering mindset."
@@ -75,7 +75,7 @@ I read quite a few articles on [Google's Cloud Solutions Architecture Reference]
 
 ## Listen to Google Cloud Platform Podcast
 
-![podcast]({{ site.url }}{{ site.baseurl }}/imagesimages/gcp/podcast.png)
+![podcast]({{ site.url }}{{ site.baseurl }}/images/gcp/podcast.png)
 
 I either bike to work or take the bus. Either way, my commutes are a good opportunity to listen to podcasts. I listen to them at home when my hands are busy but my ears are not.
 
