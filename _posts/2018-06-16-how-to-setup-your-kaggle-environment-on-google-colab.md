@@ -2,9 +2,8 @@
 toc: true
 layout: post
 title: How to setup your Kaggle environment on Google Colab
-categories:
-  - kaggle
-  - colab
+image: images/colab/thumbnail-colab.png
+categories:[kaggle, colab]
 description: "Not a biggie, but I wanted to share my little Jupyter notebook on my github repo, which you can just copy and have your Kaggle environment quickly set up on Google Colab."
 ---
 

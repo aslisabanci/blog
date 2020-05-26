@@ -2,10 +2,8 @@
 toc: true
 layout: post
 title: Enrolling in Andrew Ng's Deep Learning Specialization MOOC for free
-categories:
-  - lifehack
-  - coursera
-  - deeplearning
+image: images/coursera/thumbnail-dl-coursera.png
+categories:[lifehack, coursera, deeplearning]
 description: "This year, I enrolled in Andrew Ng's awesome Deep Learning Specialization series consisting of 5 different courses on Coursera; all for free. While chatting with people about this, I realized that people usually don't know to what extend you can make use of the course material when you enroll for free. So I wanted to share my experiences here and I hope it helps someone."
 ---
 

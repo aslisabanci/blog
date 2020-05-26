@@ -2,12 +2,9 @@
 toc: true
 layout: post
 title: How to Filter AWS Lambda Log Messages for CloudWatch Dashboard Widget
+image: images/lambda-cloudwatch/thumbnail-cloudwatch.png
 description: If you want see the graph of your Lambda function's specific log messages' count and create a CloudWatch dashboard widget out of it, you can have this setup.
-categories:
-  - aws
-  - data-engineering
-  - lambda
-  - cloudwatch
+categories:[aws, data-engineering, lambda, cloudwatch]
 ---
 If you want see the graph of your Lambda function's specific log messages' count and create a CloudWatch dashboard widget out of it, you can have this setup:
 
@@ -15,7 +12,7 @@ Let's have an example: Your Lambda function logs down a message like "Performed 
 
 - Open up your dashboard and click on Add Widget -> Query Results and then Configure. 
 
-![query](../../images/lambda-cloudwatch/widget.png)
+![query]({{ site.url }}{{ site.baseurl }}/images/lambda-cloudwatch/widget.png)
 
 
 - Select your log group, which should be like `/aws/lambda/{your_lambda_name}`
@@ -29,7 +26,7 @@ Let's have an example: Your Lambda function logs down a message like "Performed 
 | filter op_name == {op_name_you_want_to_watch} 
 | stats count(op_name) by bin(5m)`
 
-![query](../../images/lambda-cloudwatch/query.png)
+![query]({{ site.url }}{{ site.baseurl }}/images/lambda-cloudwatch/query.png)
 
 
 - Run your query and if all looks fine, also check the Visualization. 

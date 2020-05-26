@@ -2,9 +2,8 @@
 toc: true
 layout: post
 title: Kaggle Meetup
-categories:
-  - kaggle
-  - meetup
+image: images/meetup/thumbnail-meetup.png
+categories:[kaggle, meetup]
 description: "Yesterday was my third week in Munich and to join the community of the city's machine learning peeps, I went to Kaggle Munich's meetup, held at the Google office."
 ---
 
