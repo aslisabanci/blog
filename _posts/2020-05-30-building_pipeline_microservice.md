@@ -44,7 +44,7 @@ We had certain criteria on our minds, when evaluating whether to go with a 3rd p
 
 
 ### Standardization, normalization and Aggregation of Data
-As mentioned in [Data Collection and Enrichment](### Data Collection and Enrichment), our data was like a sink where the input was flowing through many different internal and external faucets. So, this multi-regional sink was one of the biggest beasts to tackle throughout our project.
+As mentioned in [Data Collection and Enrichment](#Data Collection and Enrichment), our data was like a sink where the input was flowing through many different internal and external faucets. So, this multi-regional sink was one of the biggest beasts to tackle throughout our project.
 
 #### Standardization
 We had different non-standardized representations of some data; that in fact represent the same entity. To determine our standardization algorithms and processes; I first worked together with our domain experts. After gathering some “business rules” from their side, I worked out the technical process of this standardization and made this step a part of our pipeline going forward. 
