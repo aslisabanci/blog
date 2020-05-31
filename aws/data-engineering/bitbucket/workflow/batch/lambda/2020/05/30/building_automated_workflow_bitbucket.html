@@ -151,16 +151,17 @@ window.onload = wrap_img;
 <ul>
   <li>My Lambda function gets updated and re-deployed</li>
   <li>My Docker image gets re-pushed to ECR 
-so that the Lambda function and the “containerized app” of this workflow reflect the latest changes on my app code. 
-My code repository was also sitting on Bitbucket. So, what I did was:
-    <ol>
-      <li>Whenever I make a push to my repository, my whole repository gets copied to a folder on AWS S3.</li>
-      <li>I set up AWS CodeBuild to automatically build this app folder.</li>
-      <li>Then I connected CodeBuild with AWS CodeDeploy to re-deploy my Lambda functions and the built Docker image on ECR. 
-Doing these two deployments manually is a huge hassle after every code change and not-doing this automation would be a very inefficient use of my time. So building this CI/CD for myself was absolutely a good investment.</li>
-    </ol>
-  </li>
+so that the Lambda function and the “containerized app” of this workflow reflect the latest changes on my app code.</li>
 </ul>
+
+<p>My code repository was also sitting on Bitbucket. So, what I did was:</p>
+
+<ol>
+  <li>Whenever I make a push to my repository, my whole repository gets copied to a folder on AWS S3.</li>
+  <li>I set up AWS CodeBuild to automatically build this app folder.</li>
+  <li>Then I connected CodeBuild with AWS CodeDeploy to re-deploy my Lambda functions and the built Docker image on ECR. 
+Doing these two deployments manually is a huge hassle after every code change and not-doing this automation would be a very inefficient use of my time. So building this CI/CD for myself was absolutely a good investment.</li>
+</ol>
 
 <p>Sounds fun, right? Well, at least it was for me. This integration surely gave me many headaches but these are the type of headaches that I quite enjoy. When I solve those headaches and finally see a component getting integrated with another one, I love that feeling of having solved a problem and I guess that’s a big part of why I love my profession.</p>
 
