@@ -114,14 +114,33 @@ window.onload = wrap_img;
 
   <div class="post-content e-content" itemprop="articleBody">
     <ul class="section-nav">
+<li class="toc-entry toc-h3"><a href="#data-collection-and-enrichment">Data Collection and Enrichment</a></li>
+<li class="toc-entry toc-h3"><a href="#data-storage">Data Storage</a></li>
+<li class="toc-entry toc-h3"><a href="#quantitative-and-qualitative-checks-on-data">Quantitative and Qualitative Checks on Data</a>
+<ul>
+<li class="toc-entry toc-h4"><a href="#quantitative-criteria">Quantitative Criteria</a></li>
+<li class="toc-entry toc-h4"><a href="#qualitative-criteria">Qualitative Criteria</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h3"><a href="#standardization-normalization-and-aggregation-of-data">Standardization, normalization and Aggregation of Data</a>
+<ul>
+<li class="toc-entry toc-h4"><a href="#standardization">Standardization</a></li>
+<li class="toc-entry toc-h4"><a href="#normalization">Normalization</a></li>
+<li class="toc-entry toc-h4"><a href="#aggregation">Aggregation</a></li>
+</ul>
+</li>
+<li class="toc-entry toc-h3"><a href="#deployment-of-the-pipeline">Deployment of the pipeline</a></li>
+<li class="toc-entry toc-h3"><a href="#getting-input-at-inference-time">Getting input at inference time</a></li>
+<li class="toc-entry toc-h3"><a href="#outputting-the-predictions">Outputting the predictions</a></li>
 </ul><p>In one of my projects, my work focused on building end-to-end machine learning pipelines for training and inference phases of a machine learning model. While I was working on building the pipeline, the model was iteratively developed and optimized by my data scientist team mates in parallel. The project in general consisted of loosely coupled microservices. Our pipeline would be interacting with these services through messaging services of the AWS platform.</p>
 
 <p>During the model training phase, the pipeline would be used to preprocess and structure the data as per the taste buds of our machine learning model. Then, during the inference phase, the pipeline would get the input data; apply the same preprocessing and structuring steps; feed this input into the model; get its inference and make it available for other components’ digestion on this ecosystem.</p>
 
 <p>Let’s go over these pipelines, component by component:</p>
 
-<p>###Data Collection and Enrichment
-Our core proprietary data that was collected from different internal sources. Because of this, it needed standardization, normalization and some cleanup with respect to our domain experts’ knowledge. Along with these tasks, enriching this core with 3rd party providers’ data was one of the main and ongoing tasks of this project - as the core data kept getting updated and our enrichment ideas kept continuing.</p>
+<h3 id="data-collection-and-enrichment">
+<a class="anchor" href="#data-collection-and-enrichment" aria-hidden="true"><span class="octicon octicon-link"></span></a>Data Collection and Enrichment</h3>
+<p>Our core proprietary data that was collected from different internal sources. Because of this, it needed standardization, normalization and some cleanup with respect to our domain experts’ knowledge. Along with these tasks, enriching this core with 3rd party providers’ data was one of the main and ongoing tasks of this project - as the core data kept getting updated and our enrichment ideas kept continuing.</p>
 
 <p>The scope of this component was:</p>
 
@@ -131,8 +150,9 @@ Our core proprietary data that was collected from different internal sources. Be
   <li>Versioning and managing the updates on this continuously growing ground truth data</li>
 </ul>
 
-<p>###Data Storage
-Different components of our pipeline dealt with different types of data. Some of them were highly relational while some were highly unstructured and document-style. So, I used both relational and non-relational database systems for storage.</p>
+<h3 id="data-storage">
+<a class="anchor" href="#data-storage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Data Storage</h3>
+<p>Different components of our pipeline dealt with different types of data. Some of them were highly relational while some were highly unstructured and document-style. So, I used both relational and non-relational database systems for storage.</p>
 
 <p>Designing the relational data structure was an ongoing process and my main objective was to keep the data “simply-enough” structured; thus easy to maintain. While evaluating on which database system to use and how best to store the data, I kept discussing questions like these:</p>
 
@@ -143,40 +163,50 @@ Different components of our pipeline dealt with different types of data. Some of
   <li>What’s our scaling needs?</li>
 </ul>
 
-<p>###Quantitative and Qualitative Checks on Data
-We had certain criteria on our minds, when evaluating whether to go with a 3rd party provider’s data or not. A few examples of these were as follows. 
-####Quantitative Criteria</p>
+<h3 id="quantitative-and-qualitative-checks-on-data">
+<a class="anchor" href="#quantitative-and-qualitative-checks-on-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Quantitative and Qualitative Checks on Data</h3>
+<p>We had certain criteria on our minds, when evaluating whether to go with a 3rd party provider’s data or not. A few examples of these were as follows.</p>
+<h4 id="quantitative-criteria">
+<a class="anchor" href="#quantitative-criteria" aria-hidden="true"><span class="octicon octicon-link"></span></a>Quantitative Criteria</h4>
 <ul>
   <li>How much of our data cannot be enriched by this provider’s data?</li>
   <li>Can the API perform as per our performance requirements?</li>
 </ul>
 
-<p>####Qualitative Criteria</p>
+<h4 id="qualitative-criteria">
+<a class="anchor" href="#qualitative-criteria" aria-hidden="true"><span class="octicon octicon-link"></span></a>Qualitative Criteria</h4>
 <ul>
   <li>When compared to similar data providers’ data, how similar/different/reliable is this data?</li>
   <li>How good is their technical support? How responsive is the provider?</li>
 </ul>
 
-<p>###Standardization, normalization and Aggregation of Data
-As mentioned in <a href="###Data%20Collection%20and%20Enrichment">Data Collection and Enrichment</a>, our data was like a sink where the input was flowing through many different internal and external faucets. So, this multi-regional sink was one of the biggest beasts to tackle throughout our project.</p>
+<h3 id="standardization-normalization-and-aggregation-of-data">
+<a class="anchor" href="#standardization-normalization-and-aggregation-of-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Standardization, normalization and Aggregation of Data</h3>
+<p>As mentioned in <a href="###%20Data%20Collection%20and%20Enrichment">Data Collection and Enrichment</a>, our data was like a sink where the input was flowing through many different internal and external faucets. So, this multi-regional sink was one of the biggest beasts to tackle throughout our project.</p>
 
-<p>####Standardization
-We had different non-standardized representations of some data; that in fact represent the same entity. To determine our standardization algorithms and processes; I first worked together with our domain experts. After gathering some “business rules” from their side, I worked out the technical process of this standardization and made this step a part of our pipeline going forward.</p>
+<h4 id="standardization">
+<a class="anchor" href="#standardization" aria-hidden="true"><span class="octicon octicon-link"></span></a>Standardization</h4>
+<p>We had different non-standardized representations of some data; that in fact represent the same entity. To determine our standardization algorithms and processes; I first worked together with our domain experts. After gathering some “business rules” from their side, I worked out the technical process of this standardization and made this step a part of our pipeline going forward.</p>
 
-<p>####Normalization
-This should come as no surprise that the numerical features in our data were in many different ranges. Also, different providers would use different units for the data that we want to consolidate. So, normalization was an important part of our data preprocessing.</p>
+<h4 id="normalization">
+<a class="anchor" href="#normalization" aria-hidden="true"><span class="octicon octicon-link"></span></a>Normalization</h4>
+<p>This should come as no surprise that the numerical features in our data were in many different ranges. Also, different providers would use different units for the data that we want to consolidate. So, normalization was an important part of our data preprocessing.</p>
 
-<p>####Aggregation
-For certain data, storing every single data point meant that we would require lots of storage and we indeed do not need that much granularity. For these cases, calculating meaningful mathematical aggregations and storing them was a better choice.</p>
+<h4 id="aggregation">
+<a class="anchor" href="#aggregation" aria-hidden="true"><span class="octicon octicon-link"></span></a>Aggregation</h4>
+<p>For certain data, storing every single data point meant that we would require lots of storage and we indeed do not need that much granularity. For these cases, calculating meaningful mathematical aggregations and storing them was a better choice.</p>
 
-<p>###Deployment of the pipeline
-Our pipeline had a Docker image, so that it could be registered on ECR and run in an isolated fashion on our microservice ecosystem; while allowing for easy scaling.</p>
+<h3 id="deployment-of-the-pipeline">
+<a class="anchor" href="#deployment-of-the-pipeline" aria-hidden="true"><span class="octicon octicon-link"></span></a>Deployment of the pipeline</h3>
+<p>Our pipeline had a Docker image, so that it could be registered on ECR and run in an isolated fashion on our microservice ecosystem; while allowing for easy scaling.</p>
 
-<p>###Getting input at inference time
-The containerized applications were listening to a specific queue on AWS SQS to get their input. Our machine learning model was able to digest batch input. Thus, for efficiency, the input messages on SQS contained bundled requests. It was the pipeline’s job to unbundle these; do the preprocessing steps separately for each input; and when all the processing is done, bundle the data into a ready-to-be-consumed format and feed this as a batch into our model.</p>
+<h3 id="getting-input-at-inference-time">
+<a class="anchor" href="#getting-input-at-inference-time" aria-hidden="true"><span class="octicon octicon-link"></span></a>Getting input at inference time</h3>
+<p>The containerized applications were listening to a specific queue on AWS SQS to get their input. Our machine learning model was able to digest batch input. Thus, for efficiency, the input messages on SQS contained bundled requests. It was the pipeline’s job to unbundle these; do the preprocessing steps separately for each input; and when all the processing is done, bundle the data into a ready-to-be-consumed format and feed this as a batch into our model.</p>
 
-<p>###Outputting the predictions
-Our model’s predictions were to be consumed by other microservices on our ecosystem. Just like the input, this communication was also carried over AWS SQS messaging platform.</p>
+<h3 id="outputting-the-predictions">
+<a class="anchor" href="#outputting-the-predictions" aria-hidden="true"><span class="octicon octicon-link"></span></a>Outputting the predictions</h3>
+<p>Our model’s predictions were to be consumed by other microservices on our ecosystem. Just like the input, this communication was also carried over AWS SQS messaging platform.</p>
 
 <p>As a final note; this project opened my eyes to the reality of building machine learning applications. I experienced that 90% of our project was about getting the training data right. Because of this, most of the effort is rightfully spent on this matter to get a high performing model in the end.</p>
 
