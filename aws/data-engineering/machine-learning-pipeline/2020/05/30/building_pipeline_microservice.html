@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Building an end-to-end machine learning pipeline as a microservice | Aslı Sabancı</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Building an end-to-end machine learning pipeline as a microservice" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In one of my projects, my work focused on building end-to-end machine learning pipelines for training and inference phases of a machine learning model. Head over to this post for diving into those, component by component." />
+<meta property="og:description" content="In one of my projects, my work focused on building end-to-end machine learning pipelines for training and inference phases of a machine learning model. Head over to this post for diving into those, component by component." />
+<link rel="canonical" href="https://aslisabanci.github.io/blog/aws/data-engineering/machine-learning-pipeline/2020/05/30/building_pipeline_microservice.html" />
+<meta property="og:url" content="https://aslisabanci.github.io/blog/aws/data-engineering/machine-learning-pipeline/2020/05/30/building_pipeline_microservice.html" />
+<meta property="og:site_name" content="Aslı Sabancı" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-05-30T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"In one of my projects, my work focused on building end-to-end machine learning pipelines for training and inference phases of a machine learning model. Head over to this post for diving into those, component by component.","mainEntityOfPage":{"@type":"WebPage","@id":"https://aslisabanci.github.io/blog/aws/data-engineering/machine-learning-pipeline/2020/05/30/building_pipeline_microservice.html"},"@type":"BlogPosting","url":"https://aslisabanci.github.io/blog/aws/data-engineering/machine-learning-pipeline/2020/05/30/building_pipeline_microservice.html","headline":"Building an end-to-end machine learning pipeline as a microservice","dateModified":"2020-05-30T00:00:00-05:00","datePublished":"2020-05-30T00:00:00-05:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://aslisabanci.github.io/blog/feed.xml" title="Aslı Sabancı" /><link rel="shortcut icon" type="image/x-icon" href="/blog/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Building an end-to-end machine learning pipeline as a microservice | Aslı Sabancı</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Building an end-to-end machine learning pipeline as a microservice" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="In one of my projects, my work focused on building end-to-end machine learning pipelines for training and inference phases of a machine learning model. Head over to this post for diving into those, component by component." />
+<meta property="og:description" content="In one of my projects, my work focused on building end-to-end machine learning pipelines for training and inference phases of a machine learning model. Head over to this post for diving into those, component by component." />
+<link rel="canonical" href="https://aslisabanci.github.io/blog/aws/data-engineering/machine-learning-pipeline/2020/05/30/building_pipeline_microservice.html" />
+<meta property="og:url" content="https://aslisabanci.github.io/blog/aws/data-engineering/machine-learning-pipeline/2020/05/30/building_pipeline_microservice.html" />
+<meta property="og:site_name" content="Aslı Sabancı" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-05-30T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"In one of my projects, my work focused on building end-to-end machine learning pipelines for training and inference phases of a machine learning model. Head over to this post for diving into those, component by component.","mainEntityOfPage":{"@type":"WebPage","@id":"https://aslisabanci.github.io/blog/aws/data-engineering/machine-learning-pipeline/2020/05/30/building_pipeline_microservice.html"},"@type":"BlogPosting","url":"https://aslisabanci.github.io/blog/aws/data-engineering/machine-learning-pipeline/2020/05/30/building_pipeline_microservice.html","headline":"Building an end-to-end machine learning pipeline as a microservice","dateModified":"2020-05-30T00:00:00-05:00","datePublished":"2020-05-30T00:00:00-05:00","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://aslisabanci.github.io/blog/feed.xml" title="Aslı Sabancı" />
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/blog/">Aslı Sabancı</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/blog/about/">About Me</a><a class="page-link" href="/blog/search/">Search</a><a class="page-link" href="/blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Building an end-to-end machine learning pipeline as a microservice</h1><p class="page-description">In one of my projects, my work focused on building end-to-end machine learning pipelines for training and inference phases of a machine learning model. Head over to this post for diving into those, component by component.</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-05-30T00:00:00-05:00" itemprop="datePublished">
+        May 30, 2020
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      5 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/blog/categories/#aws">aws</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#data-engineering">data-engineering</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#machine-learning-pipeline">machine-learning-pipeline</a>
+        
+      
+      </p>
+    
+
+    </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+</ul><p>In one of my projects, my work focused on building end-to-end machine learning pipelines for training and inference phases of a machine learning model. While I was working on building the pipeline, the model was iteratively developed and optimized by my data scientist team mates in parallel. The project in general consisted of loosely coupled microservices. Our pipeline would be interacting with these services through messaging services of the AWS platform.</p>
+
+<p>During the model training phase, the pipeline would be used to preprocess and structure the data as per the taste buds of our machine learning model. Then, during the inference phase, the pipeline would get the input data; apply the same preprocessing and structuring steps; feed this input into the model; get its inference and make it available for other components’ digestion on this ecosystem.</p>
+
+<p>Let’s go over these pipelines, component by component:</p>
+
+<p>###Data Collection and Enrichment
+Our core proprietary data that was collected from different internal sources. Because of this, it needed standardization, normalization and some cleanup with respect to our domain experts’ knowledge. Along with these tasks, enriching this core with 3rd party providers’ data was one of the main and ongoing tasks of this project - as the core data kept getting updated and our enrichment ideas kept continuing.</p>
+
+<p>The scope of this component was:</p>
+
+<ul>
+  <li>Evaluating 3rd party data providers with respect to their technical API specs</li>
+  <li>Collecting data from the chosen providers through API requests or through custom processes like FTP deliveries</li>
+  <li>Versioning and managing the updates on this continuously growing ground truth data</li>
+</ul>
+
+<p>###Data Storage
+Different components of our pipeline dealt with different types of data. Some of them were highly relational while some were highly unstructured and document-style. So, I used both relational and non-relational database systems for storage.</p>
+
+<p>Designing the relational data structure was an ongoing process and my main objective was to keep the data “simply-enough” structured; thus easy to maintain. While evaluating on which database system to use and how best to store the data, I kept discussing questions like these:</p>
+
+<ul>
+  <li>What types of queries do we want to perform on this data?</li>
+  <li>How often are we going to want to do this?</li>
+  <li>What additions or updates can we foresee on this data?</li>
+  <li>What’s our scaling needs?</li>
+</ul>
+
+<p>###Quantitative and Qualitative Checks on Data
+We had certain criteria on our minds, when evaluating whether to go with a 3rd party provider’s data or not. A few examples of these were as follows. 
+####Quantitative Criteria</p>
+<ul>
+  <li>How much of our data cannot be enriched by this provider’s data?</li>
+  <li>Can the API perform as per our performance requirements?</li>
+</ul>
+
+<p>####Qualitative Criteria</p>
+<ul>
+  <li>When compared to similar data providers’ data, how similar/different/reliable is this data?</li>
+  <li>How good is their technical support? How responsive is the provider?</li>
+</ul>
+
+<p>###Standardization, normalization and Aggregation of Data
+As mentioned in <a href="###Data%20Collection%20and%20Enrichment">Data Collection and Enrichment</a>, our data was like a sink where the input was flowing through many different internal and external faucets. So, this multi-regional sink was one of the biggest beasts to tackle throughout our project.</p>
+
+<p>####Standardization
+We had different non-standardized representations of some data; that in fact represent the same entity. To determine our standardization algorithms and processes; I first worked together with our domain experts. After gathering some “business rules” from their side, I worked out the technical process of this standardization and made this step a part of our pipeline going forward.</p>
+
+<p>####Normalization
+This should come as no surprise that the numerical features in our data were in many different ranges. Also, different providers would use different units for the data that we want to consolidate. So, normalization was an important part of our data preprocessing.</p>
+
+<p>####Aggregation
+For certain data, storing every single data point meant that we would require lots of storage and we indeed do not need that much granularity. For these cases, calculating meaningful mathematical aggregations and storing them was a better choice.</p>
+
+<p>###Deployment of the pipeline
+Our pipeline had a Docker image, so that it could be registered on ECR and run in an isolated fashion on our microservice ecosystem; while allowing for easy scaling.</p>
+
+<p>###Getting input at inference time
+The containerized applications were listening to a specific queue on AWS SQS to get their input. Our machine learning model was able to digest batch input. Thus, for efficiency, the input messages on SQS contained bundled requests. It was the pipeline’s job to unbundle these; do the preprocessing steps separately for each input; and when all the processing is done, bundle the data into a ready-to-be-consumed format and feed this as a batch into our model.</p>
+
+<p>###Outputting the predictions
+Our model’s predictions were to be consumed by other microservices on our ecosystem. Just like the input, this communication was also carried over AWS SQS messaging platform.</p>
+
+<p>As a final note; this project opened my eyes to the reality of building machine learning applications. I experienced that 90% of our project was about getting the training data right. Because of this, most of the effort is rightfully spent on this matter to get a high performing model in the end.</p>
+
+<p>Afterwards, when it’s time to put this application on production, the performance of the pipeline gets the spotlight. If our end-to-end pipeline could not complete the steps of enriching &amp; preprocessing the input data and getting the model’s inference in a timely manner, this would be a total showstopper. As Miles Davis puts it: <em>“Time isn’t the main thing. It’s the only thing.”</em></p>
+
+  </div><a class="u-url" href="/blog/aws/data-engineering/machine-learning-pipeline/2020/05/30/building_pipeline_microservice.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>Atoms with consciousness, matter with curiosity</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/aslisabanci" title="aslisabanci"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/asli_sabanci" title="asli_sabanci"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
