@@ -29,11 +29,14 @@ During the development of this skeleton, I also developed a CI/CD workflow for m
 * My Lambda function gets updated and re-deployed
 * My Docker image gets re-pushed to ECR 
 so that the Lambda function and the “containerized app” of this workflow reflect the latest changes on my app code. 
+
 My code repository was also sitting on Bitbucket. So, what I did was:
+
 1. Whenever I make a push to my repository, my whole repository gets copied to a folder on AWS S3.  
 2. I set up AWS CodeBuild to automatically build this app folder.
 3. Then I connected CodeBuild with AWS CodeDeploy to re-deploy my Lambda functions and the built Docker image on ECR. 
 Doing these two deployments manually is a huge hassle after every code change and not-doing this automation would be a very inefficient use of my time. So building this CI/CD for myself was absolutely a good investment.
+
 
 
 Sounds fun, right? Well, at least it was for me. This integration surely gave me many headaches but these are the type of headaches that I quite enjoy. When I solve those headaches and finally see a component getting integrated with another one, I love that feeling of having solved a problem and I guess that’s a big part of why I love my profession.
