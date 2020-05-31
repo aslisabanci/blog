@@ -2,6 +2,7 @@
 toc: true
 layout: post
 sticky_rank: 2
+image: images/abstract/components.jpg
 title: My experiences as a Machine Learning Engineer
 categories: [aws, data-engineering, machine-learning-pipeline, machine-learning-engineering]
 description: In my previous role as a consultant Machine Learning Engineer, I worked on a few different projects and all of them were quite fun in different ways!
