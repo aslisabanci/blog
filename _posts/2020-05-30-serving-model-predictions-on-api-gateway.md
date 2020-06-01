@@ -39,7 +39,7 @@ We meticulously monitored our latency and error metrics on CloudWatch and had al
 
 ## API documentation using OpenAPI 3.0 Specs
 ![coursera]({{ site.url }}{{ site.baseurl }}/images/swagger/swagger_editor.png)
-I used The OpenAPI 3.0 specs for the technical documentation of our API, as it has become the de facto standard to specify what an API can do. Swagger Editor is a great tool to do this, since it can dynamically validate your specs as you write through a beautiful GUI. If you haven’t adopted conforming to the OpenAPI specs for your APIs, go learn about it now - I’m sure you’ll love this standardization idea!
+I used The OpenAPI 3.0 specs for the technical documentation of our API, as it has become the de facto standard to specify what an API can do. [Swagger Editor](http://editor.swagger.io/) is a great tool to do this, since it can dynamically validate your specs as you write through a beautiful GUI. If you haven’t adopted conforming to the OpenAPI specs for your APIs, go learn about it now - I’m sure you’ll love this standardization idea!
 
 
 For me, this project was so fun to work on. It had a few performance optimization challenges, while preparing the ready-to-be-served data and serving the output through our Lambda function. The satisfaction of overcoming those hurdles were directly proportional to the size of those challenges though! 
