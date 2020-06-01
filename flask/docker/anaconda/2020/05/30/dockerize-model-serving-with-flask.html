@@ -203,8 +203,10 @@ window.onload = wrap_img;
 <h2 id="Werkzeug-Debugger-complaining-about-an-estimator">
 <a class="anchor" href="#Werkzeug-Debugger-complaining-about-an-estimator" aria-hidden="true"><span class="octicon octicon-link"></span></a>Werkzeug Debugger complaining about an estimator<a class="anchor-link" href="#Werkzeug-Debugger-complaining-about-an-estimator"> </a>
 </h2>
-<p>The error message was originating from the <code>Werkzeug Debugger</code>, which is one of the dependencies of Flask.
-<img src="/blog/images/copied_from_nb/flask-sklearn/err_msg.png" alt=""></p>
+<p>The error message was originating from this Werkzeug Debugger, which is one of the dependencies of Flask.</p>
+
+<pre><code>RuntimeError: The reset parameter is False but there is no n_features_in_ attribute. Is this estimator fitted?</code></pre>
+<p><img src="/blog/images/copied_from_nb/flask-sklearn/err_msg.png" alt=""></p>
 <p>After searching for the meaning of this error message, I came to the conclusion that there must be a mismatch between the scikit-learn versions of where I'm saving the model and where I'm trying to load it again. So these two different environments are my local machine and our Docker image in our case.</p>
 
 </div>
@@ -216,7 +218,7 @@ window.onload = wrap_img;
 <h2 id="Checking-sklearn-version-on-the-Docker-image">
 <a class="anchor" href="#Checking-sklearn-version-on-the-Docker-image" aria-hidden="true"><span class="octicon octicon-link"></span></a>Checking sklearn version on the Docker image<a class="anchor-link" href="#Checking-sklearn-version-on-the-Docker-image"> </a>
 </h2>
-<p>So, tracking this error down its rabbit hole, I began by checking the scikit-learn version on my active Anaconda environment - the one I was using while training and saving this machine learning model.</p>
+<p>Tracking this error down its rabbit hole, I began by checking the scikit-learn version on my active Anaconda environment - the one I was using while training and saving this machine learning model.</p>
 <p>I checked the logs that was spitted from sklearn, from within my Docker container. It was indeed giving me a warning that mentions a mismatch between sklearn versions and that it might cause my pickle file, not getting loaded properly.
 <img src="/blog/images/copied_from_nb/flask-sklearn/docker-sklearn-vers.png" alt=""></p>
 <p>Then I checked the installed sklearn package version on the Docker image and verified that it was <strong>0.23.1</strong>
@@ -237,7 +239,7 @@ window.onload = wrap_img;
 <p>So I continued the detective work...</p>
 <p>I then checked the scikit-learn version from within my IPython, as shown below:
 <img src="/blog/images/copied_from_nb/flask-sklearn/local-sklearn-vers2.png" alt=""></p>
-<p>Wow so my Python was telling me that it was in fact using version <strong>0.22.1</strong>, and not 0.21.3! To double check this, I also printed the scikit-learn's init script file, so that I can go to that file and check its version from there too.
+<p>Hmmm, my Python was telling me that it was in fact using version <strong>0.22.1</strong>, and not 0.21.3! To double check this, I also printed the scikit-learn's init script file, so that I can go to that file and check its version from there too.
 <img src="/blog/images/copied_from_nb/flask-sklearn/local-sklearn-vers3.png" alt=""></p>
 <p>Well well well, apparently conda environment was telling me a lie and misleading me with a wrong version number!</p>
 
