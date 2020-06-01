@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Dockerizing a Flask app to serve your ML model | Aslı Sabancı</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Dockerizing a Flask app to serve your ML model" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="But oops! There’s a mismatch between your scikit-learn versions…" />
+<meta property="og:description" content="But oops! There’s a mismatch between your scikit-learn versions…" />
+<link rel="canonical" href="https://aslisabanci.github.io/blog/flask/docker/anaconda/2020/05/30/dockerize-model-serving-with-flask.html" />
+<meta property="og:url" content="https://aslisabanci.github.io/blog/flask/docker/anaconda/2020/05/30/dockerize-model-serving-with-flask.html" />
+<meta property="og:site_name" content="Aslı Sabancı" />
+<meta property="og:image" content="https://aslisabanci.github.io/blog/images/docker-flask/docker-flask.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-05-30T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"But oops! There’s a mismatch between your scikit-learn versions…","mainEntityOfPage":{"@type":"WebPage","@id":"https://aslisabanci.github.io/blog/flask/docker/anaconda/2020/05/30/dockerize-model-serving-with-flask.html"},"@type":"BlogPosting","url":"https://aslisabanci.github.io/blog/flask/docker/anaconda/2020/05/30/dockerize-model-serving-with-flask.html","headline":"Dockerizing a Flask app to serve your ML model","dateModified":"2020-05-30T00:00:00-05:00","datePublished":"2020-05-30T00:00:00-05:00","image":"https://aslisabanci.github.io/blog/images/docker-flask/docker-flask.jpg","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+<link rel="stylesheet" href="/blog/assets/css/style.css"><link type="application/atom+xml" rel="alternate" href="https://aslisabanci.github.io/blog/feed.xml" title="Aslı Sabancı" /><!-- the google_analytics_id gets auto inserted from the config file -->
+
+
+
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-120364629-1','auto');ga('require','displayfeatures');ga('send','pageview');</script>
+
+<link rel="shortcut icon" type="image/x-icon" href="/blog/images/favicon.ico"><!-- Begin Jekyll SEO tag v2.6.1 -->
+<title>Dockerizing a Flask app to serve your ML model | Aslı Sabancı</title>
+<meta name="generator" content="Jekyll v4.0.0" />
+<meta property="og:title" content="Dockerizing a Flask app to serve your ML model" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="But oops! There’s a mismatch between your scikit-learn versions…" />
+<meta property="og:description" content="But oops! There’s a mismatch between your scikit-learn versions…" />
+<link rel="canonical" href="https://aslisabanci.github.io/blog/flask/docker/anaconda/2020/05/30/dockerize-model-serving-with-flask.html" />
+<meta property="og:url" content="https://aslisabanci.github.io/blog/flask/docker/anaconda/2020/05/30/dockerize-model-serving-with-flask.html" />
+<meta property="og:site_name" content="Aslı Sabancı" />
+<meta property="og:image" content="https://aslisabanci.github.io/blog/images/docker-flask/docker-flask.jpg" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-05-30T00:00:00-05:00" />
+<script type="application/ld+json">
+{"description":"But oops! There’s a mismatch between your scikit-learn versions…","mainEntityOfPage":{"@type":"WebPage","@id":"https://aslisabanci.github.io/blog/flask/docker/anaconda/2020/05/30/dockerize-model-serving-with-flask.html"},"@type":"BlogPosting","url":"https://aslisabanci.github.io/blog/flask/docker/anaconda/2020/05/30/dockerize-model-serving-with-flask.html","headline":"Dockerizing a Flask app to serve your ML model","dateModified":"2020-05-30T00:00:00-05:00","datePublished":"2020-05-30T00:00:00-05:00","image":"https://aslisabanci.github.io/blog/images/docker-flask/docker-flask.jpg","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+<link href="https://unpkg.com/@primer/css/dist/primer.css" rel="stylesheet" />
+<link rel="stylesheet" href="//use.fontawesome.com/releases/v5.0.7/css/all.css"><link type="application/atom+xml" rel="alternate" href="https://aslisabanci.github.io/blog/feed.xml" title="Aslı Sabancı" /><!-- the google_analytics_id gets auto inserted from the config file -->
+
+
+
+<script>(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create','UA-120364629-1','auto');ga('require','displayfeatures');ga('send','pageview');</script>
+
+
+
+<script>
+function wrap_img(fn) {
+    if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+        var elements = document.querySelectorAll(".post img");
+        Array.prototype.forEach.call(elements, function(el, i) {
+            if (el.getAttribute("title") && (el.className != "emoji")) {
+                const caption = document.createElement('figcaption');
+                var node = document.createTextNode(el.getAttribute("title"));
+                caption.appendChild(node);
+                const wrapper = document.createElement('figure');
+                wrapper.className = 'image';
+                el.parentNode.insertBefore(wrapper, el);
+                el.parentNode.removeChild(el);
+                wrapper.appendChild(el);
+                wrapper.appendChild(caption);
+            }
+        });
+    } else { document.addEventListener('DOMContentLoaded', fn); }
+}
+window.onload = wrap_img;
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function(){
+    // add link icon to anchor tags
+    var elem = document.querySelectorAll(".anchor-link")
+    elem.forEach(e => (e.innerHTML = '<i class="fas fa-link fa-xs"></i>'));
+    });
+</script>
+</head><body><header class="site-header">
+
+  <div class="wrapper"><a class="site-title" rel="author" href="/blog/">Aslı Sabancı</a><nav class="site-nav">
+        <input type="checkbox" id="nav-trigger" class="nav-trigger" />
+        <label for="nav-trigger">
+          <span class="menu-icon">
+            <svg viewBox="0 0 18 15" width="18px" height="15px">
+              <path d="M18,1.484c0,0.82-0.665,1.484-1.484,1.484H1.484C0.665,2.969,0,2.304,0,1.484l0,0C0,0.665,0.665,0,1.484,0 h15.032C17.335,0,18,0.665,18,1.484L18,1.484z M18,7.516C18,8.335,17.335,9,16.516,9H1.484C0.665,9,0,8.335,0,7.516l0,0 c0-0.82,0.665-1.484,1.484-1.484h15.032C17.335,6.031,18,6.696,18,7.516L18,7.516z M18,13.516C18,14.335,17.335,15,16.516,15H1.484 C0.665,15,0,14.335,0,13.516l0,0c0-0.82,0.665-1.483,1.484-1.483h15.032C17.335,12.031,18,12.695,18,13.516L18,13.516z"/>
+            </svg>
+          </span>
+        </label>
+
+        <div class="trigger"><a class="page-link" href="/blog/about/">About Me</a><a class="page-link" href="/blog/search/">Search</a><a class="page-link" href="/blog/categories/">Tags</a></div>
+      </nav></div>
+</header>
+<main class="page-content" aria-label="Content">
+      <div class="wrapper">
+        <article class="post h-entry" itemscope itemtype="http://schema.org/BlogPosting">
+
+  <header class="post-header">
+    <h1 class="post-title p-name" itemprop="name headline">Dockerizing a Flask app to serve your ML model</h1><p class="page-description">But oops! There's a mismatch between your scikit-learn versions...</p><p class="post-meta post-meta-title"><time class="dt-published" datetime="2020-05-30T00:00:00-05:00" itemprop="datePublished">
+        May 30, 2020
+      </time>
+       • <span class="read-time" title="Estimated read time">
+    
+    
+      6 min read
+    
+</span></p>
+
+    
+      <p class="category-tags"><i class="fas fa-tags category-tags-icon"></i></i> 
+      
+        <a class="category-tags-link" href="/blog/categories/#flask">flask</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#docker">docker</a>
+        &nbsp;
+      
+        <a class="category-tags-link" href="/blog/categories/#anaconda">anaconda</a>
+        
+      
+      </p>
+    
+
+    
+      
+        <div class="pb-5 d-flex flex-wrap flex-justify-end">
+          <div class="px-2">
+
+    <a href="https://github.com/aslisabanci/blog/tree/master/_notebooks/2020-05-30-dockerize-model-serving-with-flask.ipynb" role="button" target="_blank">
+<img class="notebook-badge-image" src="/blog/assets/badges/github.svg" alt="View On GitHub">
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://mybinder.org/v2/gh/aslisabanci/blog/master?filepath=_notebooks%2F2020-05-30-dockerize-model-serving-with-flask.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/blog/assets/badges/binder.svg" alt="Open In Binder"/>
+    </a>
+</div>
+
+          <div class="px-2">
+    <a href="https://colab.research.google.com/github/aslisabanci/blog/blob/master/_notebooks/2020-05-30-dockerize-model-serving-with-flask.ipynb" target="_blank">
+        <img class="notebook-badge-image" src="/blog/assets/badges/colab.svg" alt="Open In Colab"/>
+    </a>
+</div>
+        </div>
+      </header>
+
+  <div class="post-content e-content" itemprop="articleBody">
+    <ul class="section-nav">
+<li class="toc-entry toc-h2"><a href="#The-case-of-the-mismatching-scikit-learn-packages">The case of the mismatching scikit-learn packages </a></li>
+<li class="toc-entry toc-h2"><a href="#Werkzeug-Debugger-complaining-about-an-estimator">Werkzeug Debugger complaining about an estimator </a></li>
+<li class="toc-entry toc-h2"><a href="#Checking-sklearn-version-on-the-Docker-image">Checking sklearn version on the Docker image </a></li>
+<li class="toc-entry toc-h2"><a href="#Checking-sklearn-version-on-my-local-env">Checking sklearn version on my local env </a></li>
+<li class="toc-entry toc-h2"><a href="#Trying-to-update-my-scikit-learn-package">Trying to update my scikit-learn package </a></li>
+<li class="toc-entry toc-h2"><a href="#Enough-bragging,-let's-fast-forward-to-the-solution!">Enough bragging, let&#39;s fast forward to the solution! </a></li>
+<li class="toc-entry toc-h2"><a href="#Load-and-preprocess-your-data">Load and preprocess your data </a></li>
+<li class="toc-entry toc-h2"><a href="#Train-&-persist-the-machine-learning-model">Train &amp; persist the machine learning model </a></li>
+<li class="toc-entry toc-h2"><a href="#Create-a-simple-flask-app-&-Save-file-for-Docker-ization">Create a simple flask app &amp; Save file for Docker-ization </a></li>
+<li class="toc-entry toc-h2"><a href="#Create-the-Dockerfile-&-requirements.txt">Create the Dockerfile &amp; requirements.txt </a></li>
+<li class="toc-entry toc-h2"><a href="#Build-the-Docker-image-and-run-it">Build the Docker image and run it </a></li>
+<li class="toc-entry toc-h2"><a href="#Test-your-running-container">Test your running container </a></li>
+<li class="toc-entry toc-h2"><a href="#Send-your-test-request-for-prediction">Send your test request for prediction </a></li>
+</ul><!--
+#################################################
+### THIS FILE WAS AUTOGENERATED! DO NOT EDIT! ###
+#################################################
+# file to edit: _notebooks/2020-05-30-dockerize-model-serving-with-flask.ipynb
+-->
+
+<div class="container" id="notebook-container">
+        
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="The-case-of-the-mismatching-scikit-learn-packages">
+<a class="anchor" href="#The-case-of-the-mismatching-scikit-learn-packages" aria-hidden="true"><span class="octicon octicon-link"></span></a>The case of the mismatching scikit-learn packages<a class="anchor-link" href="#The-case-of-the-mismatching-scikit-learn-packages"> </a>
+</h2>
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<p>When I wanted to create a simple scikit-learn model, save it after training using <code>joblib</code> and then load it within a Dockerized Flask application to serve my model predictions, I had an error message and this is how my journey down to the rabbit hole started.</p>
+<p>First I'd like to tell you about the problem and how I solved it. And then you can follow the steps in this notebook and run the fixed version of this Dockerized Flask application, to save and load your scikit-learn models.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Werkzeug-Debugger-complaining-about-an-estimator">
+<a class="anchor" href="#Werkzeug-Debugger-complaining-about-an-estimator" aria-hidden="true"><span class="octicon octicon-link"></span></a>Werkzeug Debugger complaining about an estimator<a class="anchor-link" href="#Werkzeug-Debugger-complaining-about-an-estimator"> </a>
+</h2>
+<p>The error message was originating from the <code>Werkzeug Debugger</code>, which is one of the dependencies of Flask.
+<img src="/blog/images/copied_from_nb/flask-sklearn/err_msg.png" alt=""></p>
+<p>After searching for the meaning of this error message, I came to the conclusion that there must be a mismatch between the scikit-learn versions of where I'm saving the model and where I'm trying to load it again. So these two different environments are my local machine and our Docker image in our case.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Checking-sklearn-version-on-the-Docker-image">
+<a class="anchor" href="#Checking-sklearn-version-on-the-Docker-image" aria-hidden="true"><span class="octicon octicon-link"></span></a>Checking sklearn version on the Docker image<a class="anchor-link" href="#Checking-sklearn-version-on-the-Docker-image"> </a>
+</h2>
+<p>So, tracking this error down its rabbit hole, I began by checking the scikit-learn version on my active Anaconda environment - the one I was using while training and saving this machine learning model.</p>
+<p>I checked the logs that was spitted from sklearn, from within my Docker container. It was indeed giving me a warning that mentions a mismatch between sklearn versions and that it might cause my pickle file, not getting loaded properly.
+<img src="/blog/images/copied_from_nb/flask-sklearn/docker-sklearn-vers.png" alt=""></p>
+<p>Then I checked the installed sklearn package version on the Docker image and verified that it was <strong>0.23.1</strong>
+<img src="/blog/images/copied_from_nb/flask-sklearn/docker-sklearn-vers2.png" alt=""></p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Checking-sklearn-version-on-my-local-env">
+<a class="anchor" href="#Checking-sklearn-version-on-my-local-env" aria-hidden="true"><span class="octicon octicon-link"></span></a>Checking sklearn version on my local env<a class="anchor-link" href="#Checking-sklearn-version-on-my-local-env"> </a>
+</h2>
+<p>When I check the installed scikit-learn package on my conda environment, I saw that it says: <strong>0.21.3</strong>
+<img src="/blog/images/copied_from_nb/flask-sklearn/local-sklearn-vers.png" alt=""></p>
+<p>So this caused me lose a lot of time because when I updated my requirements.txt file for the Docker image, to also install the 0.21.3 version there; I still got the error. So something was still wrong, and there was still a mismatch.</p>
+<p>So I continued the detective work...</p>
+<p>I then checked the scikit-learn version from within my IPython, as shown below:
+<img src="/blog/images/copied_from_nb/flask-sklearn/local-sklearn-vers2.png" alt=""></p>
+<p>Wow so my Python was telling me that it was in fact using version <strong>0.22.1</strong>, and not 0.21.3! To double check this, I also printed the scikit-learn's init script file, so that I can go to that file and check its version from there too.
+<img src="/blog/images/copied_from_nb/flask-sklearn/local-sklearn-vers3.png" alt=""></p>
+<p>Well well well, apparently conda environment was telling me a lie and misleading me with a wrong version number!</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Trying-to-update-my-scikit-learn-package">
+<a class="anchor" href="#Trying-to-update-my-scikit-learn-package" aria-hidden="true"><span class="octicon octicon-link"></span></a>Trying to update my scikit-learn package<a class="anchor-link" href="#Trying-to-update-my-scikit-learn-package"> </a>
+</h2>
+<p>To solve this, I tried to update my scikit-learn package, from within my conda environment. But nope, I was still ending up with this 0.21.3 package.
+<img src="/blog/images/copied_from_nb/flask-sklearn/update-conda.png" alt=""></p>
+<p>I then noticed the warning on this, telling me to update my conda because there's a newer version. I wanted to give this a chance and run <code>conda update -n base -c defaults conda</code> to get a clean slate, but oh noes...
+<img src="/blog/images/copied_from_nb/flask-sklearn/update-conda2.png" alt=""></p>
+<p>This update ended up with messing all of my conda environment and I was unable to do anything with my conda afterwards.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Enough-bragging,-let's-fast-forward-to-the-solution!">
+<a class="anchor" href="#Enough-bragging,-let's-fast-forward-to-the-solution!" aria-hidden="true"><span class="octicon octicon-link"></span></a>Enough bragging, let's fast forward to the solution!<a class="anchor-link" href="#Enough-bragging,-let's-fast-forward-to-the-solution!"> </a>
+</h2>
+<p>Alright alright! I removed my Anaconda altogether, did a clean install and afterwards, when I checked my scikit-learn package version with <code>conda list scikit-learn</code>, it told me that I'm at <strong>0.22.1</strong> as expected. 
+<img src="/blog/images/copied_from_nb/flask-sklearn/after-update.png" alt=""></p>
+<p>So finally, phew! Now I could update my requirements.txt file to specify this version and the Docker image would also install this version of the scikit-learn and I would expect my model to be loaded smoothly. So yes, the rest of the story has a happy ending and you can also follow along this journey by executing the steps below.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Load-and-preprocess-your-data">
+<a class="anchor" href="#Load-and-preprocess-your-data" aria-hidden="true"><span class="octicon octicon-link"></span></a>Load and preprocess your data<a class="anchor-link" href="#Load-and-preprocess-your-data"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">joblib</span>
+<span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+
+<span class="kn">from</span> <span class="nn">sklearn.compose</span> <span class="kn">import</span> <span class="n">ColumnTransformer</span>
+<span class="kn">from</span> <span class="nn">sklearn.impute</span> <span class="kn">import</span> <span class="n">SimpleImputer</span>
+<span class="kn">from</span> <span class="nn">sklearn.preprocessing</span> <span class="kn">import</span> <span class="n">StandardScaler</span><span class="p">,</span> <span class="n">OneHotEncoder</span>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="kn">import</span> <span class="n">Pipeline</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="kn">import</span> <span class="n">train_test_split</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="kn">import</span> <span class="n">classification_report</span>
+<span class="kn">from</span> <span class="nn">sklearn</span> <span class="kn">import</span> <span class="n">ensemble</span>
+
+
+<span class="n">DOCKER_BUNDLE_DIR</span> <span class="o">=</span> <span class="s2">"docker-bundle"</span>
+<span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">DOCKER_BUNDLE_DIR</span><span class="p">):</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">DOCKER_BUNDLE_DIR</span><span class="p">)</span>
+<span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">DOCKER_BUNDLE_DIR</span><span class="p">:</span>  
+    <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">DOCKER_BUNDLE_DIR</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">load_data</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">):</span>
+    <span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s2">".."</span><span class="p">,</span><span class="s2">"data"</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span><span class="sa">r</span><span class="s2">"aavail-target.csv"</span><span class="p">))</span>
+
+    <span class="n">_y</span> <span class="o">=</span> <span class="n">df</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s1">'is_subscriber'</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">_y</span><span class="o">.</span><span class="n">size</span><span class="p">)</span>
+    <span class="n">y</span><span class="p">[</span><span class="n">_y</span><span class="o">==</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span> 
+    <span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">'customer_id'</span><span class="p">,</span><span class="s1">'customer_name'</span><span class="p">],</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">df</span><span class="p">,</span><span class="n">y</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">get_transformer</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="n">ColumnTransformer</span><span class="p">:</span>
+    <span class="n">numeric_features</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'age'</span><span class="p">,</span> <span class="s1">'num_streams'</span><span class="p">]</span>
+    <span class="n">numeric_transformer</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="p">[(</span><span class="s1">'imputer'</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s1">'mean'</span><span class="p">)),</span>
+                                          <span class="p">(</span><span class="s1">'scaler'</span><span class="p">,</span> <span class="n">StandardScaler</span><span class="p">())])</span>
+
+    <span class="n">categorical_features</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'country'</span><span class="p">,</span> <span class="s1">'subscriber_type'</span><span class="p">]</span>
+    <span class="n">categorical_transformer</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="p">[(</span><span class="s1">'imputer'</span><span class="p">,</span> <span class="n">SimpleImputer</span><span class="p">(</span><span class="n">strategy</span><span class="o">=</span><span class="s1">'constant'</span><span class="p">,</span> <span class="n">fill_value</span><span class="o">=</span><span class="s1">'missing'</span><span class="p">)),</span>
+                                              <span class="p">(</span><span class="s1">'onehot'</span><span class="p">,</span> <span class="n">OneHotEncoder</span><span class="p">(</span><span class="n">handle_unknown</span><span class="o">=</span><span class="s1">'ignore'</span><span class="p">))])</span>
+
+    <span class="n">transformer</span> <span class="o">=</span> <span class="n">ColumnTransformer</span><span class="p">(</span><span class="n">transformers</span><span class="o">=</span><span class="p">[(</span><span class="s1">'num'</span><span class="p">,</span> <span class="n">numeric_transformer</span><span class="p">,</span> <span class="n">numeric_features</span><span class="p">),</span>
+                                                   <span class="p">(</span><span class="s1">'cat'</span><span class="p">,</span> <span class="n">categorical_transformer</span><span class="p">,</span> <span class="n">categorical_features</span><span class="p">)])</span>
+    <span class="k">return</span> <span class="n">transformer</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Train-&amp;-persist-the-machine-learning-model">
+<a class="anchor" href="#Train-&amp;-persist-the-machine-learning-model" aria-hidden="true"><span class="octicon octicon-link"></span></a>Train &amp; persist the machine learning model<a class="anchor-link" href="#Train-&amp;-persist-the-machine-learning-model"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">X</span><span class="p">,</span><span class="n">y</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">()</span>
+
+<span class="n">X_train</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">y_test</span> <span class="o">=</span> <span class="n">train_test_split</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test_size</span><span class="o">=</span><span class="mf">0.2</span><span class="p">,</span> <span class="n">stratify</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">'n_estimators'</span><span class="p">:</span> <span class="mi">100</span><span class="p">,</span><span class="s1">'max_depth'</span><span class="p">:</span><span class="mi">2</span><span class="p">}</span>   
+<span class="n">clf</span> <span class="o">=</span> <span class="n">ensemble</span><span class="o">.</span><span class="n">RandomForestClassifier</span><span class="p">(</span><span class="o">**</span><span class="n">params</span><span class="p">)</span>
+<span class="n">pipe</span> <span class="o">=</span> <span class="n">Pipeline</span><span class="p">(</span><span class="n">steps</span><span class="o">=</span><span class="p">[(</span><span class="s1">'pre'</span><span class="p">,</span> <span class="n">get_transformer</span><span class="p">()),</span>
+                       <span class="p">(</span><span class="s1">'clf'</span><span class="p">,</span><span class="n">clf</span><span class="p">)])</span>
+<span class="n">pipe</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">y_pred</span> <span class="o">=</span> <span class="n">pipe</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">classification_report</span><span class="p">(</span><span class="n">y_test</span><span class="p">,</span><span class="n">y_pred</span><span class="p">))</span>
+
+<span class="n">pipe</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="n">saved_model</span> <span class="o">=</span> <span class="s1">'rfc_out.joblib'</span>
+<span class="n">joblib</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">pipe</span><span class="p">,</span> <span class="n">saved_model</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>              precision    recall  f1-score   support
+
+         0.0       0.83      0.91      0.87       142
+         1.0       0.71      0.55      0.62        58
+
+    accuracy                           0.81       200
+   macro avg       0.77      0.73      0.75       200
+weighted avg       0.80      0.81      0.80       200
+
+</pre>
+</div>
+</div>
+
+<div class="output_area">
+
+
+
+<div class="output_text output_subarea output_execute_result">
+<pre>['rfc_out.joblib']</pre>
+</div>
+
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Create-a-simple-flask-app-&amp;-Save-file-for-Docker-ization">
+<a class="anchor" href="#Create-a-simple-flask-app-&amp;-Save-file-for-Docker-ization" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create a simple flask app &amp; Save file for Docker-ization<a class="anchor-link" href="#Create-a-simple-flask-app-&amp;-Save-file-for-Docker-ization"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%writefile</span> app.py
+
+<span class="kn">from</span> <span class="nn">flask</span> <span class="kn">import</span> <span class="n">Flask</span><span class="p">,</span> <span class="n">jsonify</span><span class="p">,</span> <span class="n">request</span>
+<span class="kn">import</span> <span class="nn">joblib</span>
+<span class="kn">import</span> <span class="nn">socket</span>
+<span class="kn">import</span> <span class="nn">json</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">os</span>
+
+<span class="n">app</span> <span class="o">=</span> <span class="n">Flask</span><span class="p">(</span><span class="vm">__name__</span><span class="p">)</span>
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s2">"/"</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">hello</span><span class="p">():</span>
+    <span class="n">html</span> <span class="o">=</span> <span class="s2">"&lt;h3&gt;Hello there, make sure that I'm echoing the correct NAME you set: </span><span class="si">{name}</span><span class="s2">!&lt;/h3&gt;"</span>
+    <span class="k">return</span> <span class="n">html</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">name</span><span class="o">=</span><span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span><span class="s2">"NAME"</span><span class="p">))</span>
+
+
+<span class="nd">@app</span><span class="o">.</span><span class="n">route</span><span class="p">(</span><span class="s1">'/predict'</span><span class="p">,</span> <span class="n">methods</span><span class="o">=</span><span class="p">[</span><span class="s1">'GET'</span><span class="p">,</span><span class="s1">'POST'</span><span class="p">])</span>
+<span class="k">def</span> <span class="nf">predict</span><span class="p">():</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"ERROR: API (predict): did not receive request data"</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">jsonify</span><span class="p">([])</span>
+
+    <span class="n">query</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">json</span><span class="p">)</span>    
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">query</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+         <span class="n">query</span> <span class="o">=</span> <span class="n">query</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+
+    <span class="n">y_pred</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">query</span><span class="p">)</span>
+    <span class="k">return</span><span class="p">(</span><span class="n">jsonify</span><span class="p">(</span><span class="n">y_pred</span><span class="o">.</span><span class="n">tolist</span><span class="p">()))</span>
+            
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">'__main__'</span><span class="p">:</span>
+    <span class="n">saved_model</span> <span class="o">=</span> <span class="s1">'rfc_out.joblib'</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">joblib</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">saved_model</span><span class="p">)</span>
+    <span class="n">app</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">host</span><span class="o">=</span><span class="s1">'0.0.0.0'</span><span class="p">,</span> <span class="n">port</span><span class="o">=</span><span class="mi">8080</span><span class="p">,</span><span class="n">debug</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Overwriting app.py
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Create-the-Dockerfile-&amp;-requirements.txt">
+<a class="anchor" href="#Create-the-Dockerfile-&amp;-requirements.txt" aria-hidden="true"><span class="octicon octicon-link"></span></a>Create the Dockerfile &amp; requirements.txt<a class="anchor-link" href="#Create-the-Dockerfile-&amp;-requirements.txt"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%writefile</span> requirements.txt
+
+<span class="n">cython</span>
+<span class="n">numpy</span>
+<span class="n">flask</span>
+<span class="n">pandas</span>
+<span class="n">scikit</span><span class="o">-</span><span class="n">learn</span><span class="o">==</span><span class="mf">0.22</span><span class="o">.</span><span class="mi">1</span> <span class="c1">#Assuring that your joblib'd model will be perfectly loaded inside your Docker container</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Overwriting requirements.txt
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="o">%%writefile</span> Dockerfile
+
+<span class="n">FROM</span> <span class="n">python</span><span class="p">:</span><span class="mf">3.7</span><span class="o">.</span><span class="mi">7</span><span class="o">-</span><span class="n">stretch</span>
+
+<span class="n">RUN</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">update</span> <span class="o">&amp;&amp;</span> <span class="n">apt</span><span class="o">-</span><span class="n">get</span> <span class="n">install</span> <span class="o">-</span><span class="n">y</span> \
+<span class="n">python3</span><span class="o">-</span><span class="n">dev</span> \
+<span class="n">build</span><span class="o">-</span><span class="n">essential</span>    
+        
+<span class="c1"># Set the working directory to /app</span>
+<span class="n">WORKDIR</span> <span class="o">/</span><span class="n">app</span>
+
+<span class="c1"># Copy the current directory contents into the container at /app</span>
+<span class="n">ADD</span> <span class="o">.</span> <span class="o">/</span><span class="n">app</span>
+
+<span class="c1"># Install any needed packages specified in requirements.txt</span>
+<span class="n">RUN</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">upgrade</span> <span class="n">pip</span>
+<span class="n">RUN</span> <span class="n">pip</span> <span class="n">install</span> <span class="o">--</span><span class="n">no</span><span class="o">-</span><span class="n">cache</span><span class="o">-</span><span class="nb">dir</span> <span class="o">-</span><span class="n">r</span> <span class="n">requirements</span><span class="o">.</span><span class="n">txt</span>
+
+<span class="c1"># Make port 80 available to the world outside this container</span>
+<span class="n">EXPOSE</span> <span class="mi">80</span>
+
+<span class="c1"># Define environment variable</span>
+<span class="n">ENV</span> <span class="n">NAME</span> <span class="n">demo</span><span class="o">-</span><span class="n">app</span><span class="o">-</span><span class="n">fix</span><span class="o">-</span><span class="n">version</span><span class="o">-</span><span class="n">match</span>
+
+<span class="c1"># Run app.py when the container launches</span>
+<span class="n">CMD</span> <span class="p">[</span><span class="s2">"python"</span><span class="p">,</span> <span class="s2">"app.py"</span><span class="p">]</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Overwriting Dockerfile
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Build-the-Docker-image-and-run-it">
+<a class="anchor" href="#Build-the-Docker-image-and-run-it" aria-hidden="true"><span class="octicon octicon-link"></span></a>Build the Docker image and run it<a class="anchor-link" href="#Build-the-Docker-image-and-run-it"> </a>
+</h2>
+<ol>
+<li>Build the image, from within the DOCKER_BUNDLE_DIR</li>
+</ol>
+<div class="highlight"><pre><span></span>~$ <span class="nb">cd</span> docker-bundle
+    ~$ docker build -t demo-app-sklearn-version-match .
+</pre></div>
+<ol>
+<li>Run the container</li>
+</ol>
+<div class="highlight"><pre><span></span>~$ docker run -p <span class="m">4000</span>:8080 demo-app-sklearn-version-match
+</pre></div>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Test-your-running-container">
+<a class="anchor" href="#Test-your-running-container" aria-hidden="true"><span class="octicon octicon-link"></span></a>Test your running container<a class="anchor-link" href="#Test-your-running-container"> </a>
+</h2>
+<p>Check <a href="http://0.0.0.0:4000/">http://0.0.0.0:4000/</a> to ensure your Flask app is breathing there.</p>
+
+</div>
+</div>
+</div>
+<div class="cell border-box-sizing text_cell rendered">
+<div class="inner_cell">
+<div class="text_cell_render border-box-sizing rendered_html">
+<h2 id="Send-your-test-request-for-prediction">
+<a class="anchor" href="#Send-your-test-request-for-prediction" aria-hidden="true"><span class="octicon octicon-link"></span></a>Send your test request for prediction<a class="anchor-link" href="#Send-your-test-request-for-prediction"> </a>
+</h2>
+</div>
+</div>
+</div>
+    
+    
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">requests</span>
+<span class="kn">from</span> <span class="nn">ast</span> <span class="kn">import</span> <span class="n">literal_eval</span>
+
+<span class="n">X_query</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="n">X_query</span><span class="p">[</span><span class="s1">'country'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'united_states'</span><span class="p">,</span><span class="s1">'united_states'</span><span class="p">,</span><span class="s1">'singapore'</span><span class="p">,</span><span class="s1">'united_states'</span><span class="p">,</span><span class="s1">'singapore'</span><span class="p">]</span>
+<span class="n">X_query</span><span class="p">[</span><span class="s1">'age'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">28</span><span class="p">,</span><span class="mi">30</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">24</span><span class="p">,</span><span class="mi">39</span><span class="p">]</span>
+<span class="n">X_query</span><span class="p">[</span><span class="s1">'subscriber_type'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'aavail_premium'</span><span class="p">,</span><span class="s1">'aavail_basic'</span><span class="p">,</span><span class="s1">'aavail_basic'</span><span class="p">,</span><span class="s1">'aavail_basic'</span><span class="p">,</span><span class="s1">'aavail_unlimited'</span><span class="p">]</span>
+<span class="n">X_query</span><span class="p">[</span><span class="s1">'num_streams'</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">9</span><span class="p">,</span><span class="mi">19</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">20</span><span class="p">]</span>
+<span class="n">query</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">X_query</span><span class="p">)</span><span class="o">.</span><span class="n">to_dict</span><span class="p">()</span>
+
+<span class="n">port</span> <span class="o">=</span> <span class="mi">4000</span>
+<span class="n">request</span> <span class="o">=</span> <span class="n">requests</span><span class="o">.</span><span class="n">post</span><span class="p">(</span><span class="s1">'http://0.0.0.0:</span><span class="si">{}</span><span class="s1">/predict'</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">port</span><span class="p">),</span><span class="n">json</span><span class="o">=</span><span class="n">query</span><span class="p">)</span>
+<span class="n">response</span> <span class="o">=</span> <span class="n">literal_eval</span><span class="p">(</span><span class="n">request</span><span class="o">.</span><span class="n">text</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+</pre></div>
+
+    </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+<div class="output_area">
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[0.0, 0.0, 0.0, 0.0, 1.0]
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+    
+
+</div>
+
+
+
+  </div><!-- from https://github.com/utterance/utterances -->
+<script src="https://utteranc.es/client.js"
+        repo="aslisabanci/blog"
+        issue-term="title"
+        label="blogpost-comment"
+        theme="github-light"
+        crossorigin="anonymous"
+        async>
+</script><a class="u-url" href="/blog/flask/docker/anaconda/2020/05/30/dockerize-model-serving-with-flask.html" hidden></a>
+</article>
+      </div>
+    </main><footer class="site-footer h-card">
+  <data class="u-url" href="/blog/"></data>
+
+  <div class="wrapper">
+
+    <div class="footer-col-wrapper">
+      <div class="footer-col">
+        <p class="feed-subscribe">
+          <a href="/blog/feed.xml">
+            <svg class="svg-icon orange">
+              <use xlink:href="/blog/assets/minima-social-icons.svg#rss"></use>
+            </svg><span>Subscribe</span>
+          </a>
+        </p>
+      </div>
+      <div class="footer-col">
+        <p>Atoms with consciousness, matter with curiosity</p>
+      </div>
+    </div>
+
+    <div class="social-links"><ul class="social-media-list"><li><a rel="me" href="https://github.com/aslisabanci" title="aslisabanci"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#github"></use></svg></a></li><li><a rel="me" href="https://twitter.com/asli_sabanci" title="asli_sabanci"><svg class="svg-icon grey"><use xlink:href="/blog/assets/minima-social-icons.svg#twitter"></use></svg></a></li></ul>
+</div>
+
+  </div>
+
+</footer>
+</body>
+
+</html>
