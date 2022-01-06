@@ -2,8 +2,8 @@
 
 module.exports = {
   url: 'https://lumen.netlify.com',
-  pathPrefix: '/blog',
-  title: 'Blog by Asli Sabanci',
+  pathPrefix: '/',
+  title: 'Blog by Aslı Sabancı',
   subtitle: 'Atoms with consciousness, matter with curiosity',
   copyright: '© All rights reserved.',
   disqusShortname: '',
@@ -25,9 +25,9 @@ module.exports = {
     }
   ],
   author: {
-    name: 'Asli Sabanci',
-    photo: '/photo.jpg',
-    bio: 'BIO XXX',
+    name: 'Aslı Sabancı',
+    photo: '/photo.png',
+    bio: 'BIO XXXx',
     contacts: {
       email: '',
       facebook: '#',
