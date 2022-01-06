@@ -5,7 +5,7 @@
   "main": "n/a",
   "scripts": {
     "develop": "yarn clean && gatsby develop",
-    "build": "yarn clean && gatsby build",
+    "build": "export NODE_OPTIONS=--openssl-legacy-provider && yarn clean && gatsby build",
     "deploy": "yarn clean && gatsby build --prefix-paths && gh-pages -d public",
     "clean": "rimraf .cache public",
     "flow": "flow",
@@ -16,8 +16,8 @@
     "test:coverage": "jest --coverage --config ./jest/jest-config.js",
     "test:watch": "jest --watch --config ./jest/jest-config.js"
   },
-  "repository": "https://github.com/alxshelepenok/gatsby-starter-lumen",
-  "author": "Alexander Shelepenok <alxshelepenok@gmail.com>",
+  "repository": "https://github.com/aslisabanci/blog",
+  "author": "Asli Sabanci",
   "license": "MIT",
   "keywords": [
     "gatsby",

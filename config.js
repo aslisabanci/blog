@@ -2,13 +2,13 @@
 
 module.exports = {
   url: 'https://lumen.netlify.com',
-  pathPrefix: '/',
-  title: 'Blog by John Doe',
-  subtitle: 'Pellentesque odio nisi, euismod in, pharetra a, ultricies in, diam. Sed arcu.',
+  pathPrefix: '/blog',
+  title: 'Blog by Asli Sabanci',
+  subtitle: 'Atoms with consciousness, matter with curiosity',
   copyright: '© All rights reserved.',
   disqusShortname: '',
   postsPerPage: 4,
-  googleAnalyticsId: 'UA-73379983-2',
+  googleAnalyticsId: 'UA-XXXXXX',
   useKatex: false,
   menu: [
     {
@@ -25,14 +25,14 @@ module.exports = {
     }
   ],
   author: {
-    name: 'John Doe',
+    name: 'Asli Sabanci',
     photo: '/photo.jpg',
-    bio: 'Pellentesque odio nisi, euismod in, pharetra a, ultricies in, diam. Sed arcu.',
+    bio: 'BIO XXX',
     contacts: {
       email: '',
       facebook: '#',
       telegram: '#',
-      twitter: '#',
+      twitter: 'asli_sabanci',
       github: '#',
       rss: '',
       vkontakte: '',
