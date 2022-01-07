@@ -117,18 +117,6 @@
   Link: </blog/component---src-templates-post-template-js-32a004a3619ef9011e8d.js>; rel=preload; as=script
   Link: </blog/page-data/app-data.json>; rel=preload; as=fetch; crossorigin
   Link: </blog/page-data/posts/the-origins-of-social-stationery-lettering/page-data.json>; rel=preload; as=fetch; crossorigin
-/blog/posts/the-birth-of-movable-type
-  Link: </blog/webpack-runtime-ceddc3b833e4e32ea710.js>; rel=preload; as=script
-  Link: </blog/styles-407fe62976dc5310c43e.js>; rel=preload; as=script
-  Link: </blog/framework-1e331b2e9d55ebef6dec.js>; rel=preload; as=script
-  Link: </blog/532a2f07-549094fa347c85980056.js>; rel=preload; as=script
-  Link: </blog/dc6a8720040df98778fe970bf6c000a41750d3ae-ae9f57b3df6a2a1f7657.js>; rel=preload; as=script
-  Link: </blog/app-62417eddf68d7a2815b8.js>; rel=preload; as=script
-  Link: </blog/styles-407fe62976dc5310c43e.js>; rel=preload; as=script
-  Link: </blog/cd95ea5cbd2c605f26db819f07999610c9ff4310-69626fa07c736046dbe7.js>; rel=preload; as=script
-  Link: </blog/component---src-templates-post-template-js-32a004a3619ef9011e8d.js>; rel=preload; as=script
-  Link: </blog/page-data/app-data.json>; rel=preload; as=fetch; crossorigin
-  Link: </blog/page-data/posts/the-birth-of-movable-type/page-data.json>; rel=preload; as=fetch; crossorigin
 /blog/posts/a-brief-history-of-typography
   Link: </blog/webpack-runtime-ceddc3b833e4e32ea710.js>; rel=preload; as=script
   Link: </blog/styles-407fe62976dc5310c43e.js>; rel=preload; as=script
@@ -141,6 +129,18 @@
   Link: </blog/component---src-templates-post-template-js-32a004a3619ef9011e8d.js>; rel=preload; as=script
   Link: </blog/page-data/app-data.json>; rel=preload; as=fetch; crossorigin
   Link: </blog/page-data/posts/a-brief-history-of-typography/page-data.json>; rel=preload; as=fetch; crossorigin
+/blog/posts/the-birth-of-movable-type
+  Link: </blog/webpack-runtime-ceddc3b833e4e32ea710.js>; rel=preload; as=script
+  Link: </blog/styles-407fe62976dc5310c43e.js>; rel=preload; as=script
+  Link: </blog/framework-1e331b2e9d55ebef6dec.js>; rel=preload; as=script
+  Link: </blog/532a2f07-549094fa347c85980056.js>; rel=preload; as=script
+  Link: </blog/dc6a8720040df98778fe970bf6c000a41750d3ae-ae9f57b3df6a2a1f7657.js>; rel=preload; as=script
+  Link: </blog/app-62417eddf68d7a2815b8.js>; rel=preload; as=script
+  Link: </blog/styles-407fe62976dc5310c43e.js>; rel=preload; as=script
+  Link: </blog/cd95ea5cbd2c605f26db819f07999610c9ff4310-69626fa07c736046dbe7.js>; rel=preload; as=script
+  Link: </blog/component---src-templates-post-template-js-32a004a3619ef9011e8d.js>; rel=preload; as=script
+  Link: </blog/page-data/app-data.json>; rel=preload; as=fetch; crossorigin
+  Link: </blog/page-data/posts/the-birth-of-movable-type/page-data.json>; rel=preload; as=fetch; crossorigin
 /blog/posts/humane-typography-in-the-digital-age
   Link: </blog/webpack-runtime-ceddc3b833e4e32ea710.js>; rel=preload; as=script
   Link: </blog/styles-407fe62976dc5310c43e.js>; rel=preload; as=script
