@@ -2,7 +2,7 @@
 
 module.exports = {
   url: 'https://lumen.netlify.com',
-  pathPrefix: '/',
+  pathPrefix: '/blog',
   title: 'Blog by Aslı Sabancı',
   subtitle: 'Atoms with consciousness, matter with curiosity',
   copyright: '© All rights reserved.',
