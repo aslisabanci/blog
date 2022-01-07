@@ -27,7 +27,7 @@ module.exports = {
   author: {
     name: 'Aslı Sabancı',
     photo: '/photo.jpg',
-    bio: 'BIO XXXx',
+    bio: 'BIO XXXxzz',
     contacts: {
       email: '',
       facebook: '#',
