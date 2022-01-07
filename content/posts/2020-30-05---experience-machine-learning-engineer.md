@@ -1,10 +1,15 @@
 ---
-toc: true
-layout: post
-sticky_rank: 2
-image: images/abstract/components.jpg
-title: My experiences as a Machine Learning Engineer
-description: In my previous role as a consultant Machine Learning Engineer, I worked on a few different projects and all of them were quite fun in different ways!
+title: "My experiences as a Machine Learning Engineer"
+date: "2020-30-05T22:12:03.284Z"
+slug: "experience-machinelearning-engineer"
+template: "post"
+draft: false
+category: "Machine Learning Engineering"
+tags:
+  - "machine-learning"
+  - "experience"
+description: "In my previous role as a consultant Machine Learning Engineer, I worked on a few different projects and all of them were quite fun in different ways!"
+socialImage: "/media/abstract/components.jpg"
 ---
 
 In my previous role as a consultant Machine Learning Engineer, I worked on a few different projects. Some of them were in-house; improving our internal workflows by connecting certain components end-to-end or creating a framework to standardize certain parts of our data science projects. Others were large scale client projects; building training and inference pipelines for machine learning models, putting them into production or creating an API to serve model predictions to outside consumers.
@@ -17,6 +22,6 @@ In the following posts, I’ll briefly share some of the applications I built. F
 
 So, enjoy!
 
-- [Building an end-to-end machine learning pipeline as a microservice](https://aslisabanci.github.io/blog/aws/data-engineering/machine-learning-pipeline/2020/05/30/building_pipeline_microservice.html)
-- [Serving a machine learning model’s predictions through AWS Lambda and API Gateway](https://aslisabanci.github.io/blog/aws/data-engineering/machine-learning-pipeline/api-gateway/lambda/dynamodb/2020/05/30/serving-model-predictions-on-api-gateway.html)
-- [Building an automated workflow through Bitbucket and AWS components](https://aslisabanci.github.io/blog/aws/data-engineering/bitbucket/workflow/batch/lambda/2020/05/30/building_automated_workflow_bitbucket.html)
+- [Building an end-to-end machine learning pipeline as a microservice](https://aslisabanci.github.io/blog/end-to-end-machinelearning-pipeline-microservice)
+- [Serving a machine learning model’s predictions through AWS Lambda and API Gateway](https://aslisabanci.github.io/blog/serving-predictions-aws-lambda-gateway)
+- [Building an automated workflow through Bitbucket and AWS components](https://aslisabanci.github.io/blog/automated-workflow-bitbucket-aws)

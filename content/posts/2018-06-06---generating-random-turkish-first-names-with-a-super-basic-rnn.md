@@ -6,7 +6,7 @@ template: "post"
 draft: false
 category: "DeepLearning"
 tags:
-  - "DeepLearning"
+  - "deep-learning"
 description: "Inspired by the mini 'Dinosaur name generator' project I did a while ago, I wanted to re-use the core code (with some modifications and refactorings of my own) and try to generate Turkish first names. The project was about building a simple recurrent neural network using numpy and it was a part of the Sequence Models course of Andrew Ng's awesome Deep Learning Specialization series on Coursera."
 ---
 

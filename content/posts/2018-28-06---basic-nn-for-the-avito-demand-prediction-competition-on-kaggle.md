@@ -1,38 +1,43 @@
 ---
-toc: true
-layout: post
-title: Basic NN for the Avito Demand Prediction Competition on Kaggle
-image: images/kaggle/thumbnail-kaggle.png
-categories: [kaggle, deeplearning]
+title: "Basic NN for the Avito Demand Prediction Competition on Kaggle"
+date: "2018-28-06T22:12:03.284Z"
+slug: "basic-neuralnet-avito-demand-prediction-competition-kaggle"
+template: "post"
+draft: false
+category: "Kaggle"
+tags:
+  - "kaggle"
+  - "deep-learning"
 description: "I wanted to try building a model for the Avito Demand Prediction competition on Kaggle and I came across a few hurdles on the road, which taught me lots of new things. I wasn't after a good score but I just wanted to build a neural network with Keras from end to end and get predictions from it."
+socialImage: "/media/kaggle/thumbnail-kaggle.png"
 ---
 
-I wanted to try building a model for the Avito Demand Prediction competition on Kaggle and I came across a few hurdles on the road, which taught me lots of new things. I wasn't after a good score but I just wanted to build a neural network with Keras from end to end and get predictions from it. 
+I wanted to try building a model for the Avito Demand Prediction competition on Kaggle and I came across a few hurdles on the road, which taught me lots of new things. I wasn't after a good score but I just wanted to build a neural network with Keras from end to end and get predictions from it.
 
-So for this competition, we're trying to predict demand for an online advertisement based on its full description (title, description, images, etc.) and its context. 
+So for this competition, we're trying to predict demand for an online advertisement based on its full description (title, description, images, etc.) and its context.
 
-Roughly, I wanted to make use of the categorical features and a few continious features. I also wanted to the features of the images and for this I wanted to get their extracted features from VGG16.
+Roughly, I wanted to make use of the categorical features and a few continuous features. I also wanted to the features of the images and for this I wanted to get their extracted features from VGG16.
 
 ## Getting image features from VGG16
 While I was trying to get the image feature extraction through VGG16, I found out that someone else on Kaggle has a kernel for that, so I added his two kernels' outputs (one outputting the VGG16 features of the training data set images and the other one, the test data set images) as the data source of my own kernel and I could use these sparse output matrices within my script.
 
 So I dropped the image column of the datasets and appended these 512 features taken from VGG16, to my train and test data frames (during feeding my model batch by batch, as explained below, because the dense array version of these sparse data was taking lots of memory).
 
-## Cleaning, imputating, dropping, transforming, encoding, scaling
-I dropped the columns I won't use and imputated the datasets by filling in the NAN values accordingly. Then I transformed some features like the activation date to weekday and title and description (which were in Russian) to their word counts (I could have dealt with this information by extracting the text features through another established model, but I didn't focus on that). 
+## Cleaning, imputing, dropping, transforming, encoding, scaling
+I dropped the columns I won't use and imputed the datasets by filling in the NAN values accordingly. Then I transformed some features like the activation date to weekday and title and description (which were in Russian) to their word counts (I could have dealt with this information by extracting the text features through another established model, but I didn't focus on that).
 
-I encoded the categorical columns with LabelEncoders and I scaled my continous features between 0 and 1, using the StandardScaler. 
+I encoded the categorical columns with LabelEncoders and I scaled my continuous features between 0 and 1, using the StandardScaler.
 
 ## Fitting all the data into 15GB memory
 Of course, as a noob, I took my chances to see if I can feed all of this data at once to my model. Apparently and indeed not surprisingly, this wasn't possible with the Kaggle kernels' 15 GB memory limit. Then I learnt about the fit_generator method of Keras, which lets you feed your data to your model, spoon by spoon :] I'm pretty happy that I learnt about this method - hurdles along the way are the best teachers I think.
 
 ## Getting NAN loss during training
-During the initial steps, my loss value was decreasing but then I started getting NAN loss, before the 1st epoch completed. This made me suspicious of my input data and I found out that I forgot to scale some of my continuous features. I did that and these NAN values were gone. 
+During the initial steps, my loss value was decreasing but then I started getting NAN loss, before the 1st epoch completed. This made me suspicious of my input data and I found out that I forgot to scale some of my continuous features. I did that and these NAN values were gone.
 
 ## Final thoughts
 
-So this pretty basic model didn't do super great in the competition but I at least succeeded in building an end to end model, getting its predictions and I learnt a lot from these small to medium scale hurdles :] 
-To improve this, I can think of what new features I can introduce with "feature engineering", modify my hyperparameters or my network architecture or make use of some more features like the description for instance. 
+So this pretty basic model didn't do super great in the competition but I at least succeeded in building an end to end model, getting its predictions and I learnt a lot from these small to medium scale hurdles :]
+To improve this, I can think of what new features I can introduce with "feature engineering", modify my hyper-parameters or my network architecture or make use of some more features like the description for instance.
 
 So here is my script but of course it won't run properly unless you run it on a Kaggle kernel by adding the necessary datasets. If you spot any mistakes, you are more than welcome to point those out and let me learn from you!
 

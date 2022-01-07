@@ -4,7 +4,7 @@ module.exports = {
   url: 'https://aslisabanci.github.io/blog',
   pathPrefix: '/blog',
   title: 'Blog by Aslı Sabancı',
-  subtitle: 'Atoms with consciousness, matter with curiosity',
+  subtitle: '"Atoms with consciousness, matter with curiosity"',
   copyright: '© All rights reserved.',
   disqusShortname: '',
   postsPerPage: 4,
