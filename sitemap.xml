@@ -2,14 +2,17 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:news="http://www.google.com/schemas/sitemap-news/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml" xmlns:mobile="http://www.google.com/schemas/sitemap-mobile/1.0" xmlns:image="http://www.google.com/schemas/sitemap-image/1.1" xmlns:video="http://www.google.com/schemas/sitemap-video/1.1">
 <url> <loc>https://aslisabanci.github.io/blog/blog/tags</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://aslisabanci.github.io/blog/blog/categories</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
-<url> <loc>https://aslisabanci.github.io/blog/blog/posts/perfecting-the-art-of-perfection</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
-<url> <loc>https://aslisabanci.github.io/blog/blog/posts/the-origins-of-social-stationery-lettering</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
-<url> <loc>https://aslisabanci.github.io/blog/blog/posts/a-brief-history-of-typography</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
-<url> <loc>https://aslisabanci.github.io/blog/blog/posts/the-birth-of-movable-type</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
-<url> <loc>https://aslisabanci.github.io/blog/blog/posts/humane-typography-in-the-digital-age</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://aslisabanci.github.io/blog/blog/posts/2018-05-06---enrolling-in-a-coursera-mooc-for-free/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://aslisabanci.github.io/blog/blog/posts/2018-05-06---kaggle-munich-meetup/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://aslisabanci.github.io/blog/blog/posts/2018-06-06---generating-random-turkish-first-names-with-a-super-basic-rnn/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://aslisabanci.github.io/blog/blog/posts/templateposts/perfecting-the-art-of-perfection</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://aslisabanci.github.io/blog/blog/posts/templateposts/the-origins-of-social-stationery-lettering</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://aslisabanci.github.io/blog/blog/posts/templateposts/a-brief-history-of-typography</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://aslisabanci.github.io/blog/blog/posts/templateposts/the-birth-of-movable-type</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://aslisabanci.github.io/blog/blog/posts/templateposts/humane-typography-in-the-digital-age</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://aslisabanci.github.io/blog/blog/pages/about/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://aslisabanci.github.io/blog/blog/pages/contacts/</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://aslisabanci.github.io/blog/blog/tag/deep-learning</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://aslisabanci.github.io/blog/blog/tag/design</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://aslisabanci.github.io/blog/blog/tag/gatsby</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://aslisabanci.github.io/blog/blog/tag/handwriting</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
@@ -21,8 +24,13 @@
 <url> <loc>https://aslisabanci.github.io/blog/blog/tag/open-source</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://aslisabanci.github.io/blog/blog/tag/typography</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://aslisabanci.github.io/blog/blog/tag/web-development</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://aslisabanci.github.io/blog/blog/tag/coursera</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://aslisabanci.github.io/blog/blog/tag/deeplearning</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://aslisabanci.github.io/blog/blog/tag/kaggle</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://aslisabanci.github.io/blog/blog/tag/lifehack</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://aslisabanci.github.io/blog/blog/tag/meetup</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://aslisabanci.github.io/blog/blog/category/coursera</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
+<url> <loc>https://aslisabanci.github.io/blog/blog/category/deep-learning</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://aslisabanci.github.io/blog/blog/category/design-culture</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://aslisabanci.github.io/blog/blog/category/design-inspiration</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
 <url> <loc>https://aslisabanci.github.io/blog/blog/category/typography</loc> <changefreq>daily</changefreq> <priority>0.7</priority> </url>
