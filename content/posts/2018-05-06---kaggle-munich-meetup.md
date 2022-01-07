@@ -1,6 +1,7 @@
 ---
 title: "Kaggle Munich Meetup"
 date: "2018-05-06T00:00:00.000Z"
+slug: "kaggle-munich-meetup"
 template: "post"
 draft: false
 category: "kaggle"

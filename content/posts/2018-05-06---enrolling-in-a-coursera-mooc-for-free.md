@@ -1,6 +1,7 @@
 ---
 title: "Enrolling in Andrew Ng's Deep Learning Specialization MOOC for free"
 date: "2018-05-06T22:12:03.284Z"
+slug: "enrolling-in-coursera-for-free"
 template: "post"
 draft: false
 category: "Coursera"

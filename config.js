@@ -27,24 +27,12 @@ module.exports = {
   author: {
     name: 'Aslı Sabancı',
     photo: '/photo.jpg',
-    bio: 'BIO XXXxzz',
+    bio: 'atoms with consciousness matter with curiosity',
     contacts: {
-      email: '',
-      facebook: '#',
-      telegram: '#',
+      email: 'aslisabanci🐴gmail🔴com',
       twitter: 'asli_sabanci',
-      github: '#',
-      rss: '',
-      vkontakte: '',
-      linkedin: '#',
-      instagram: '#',
-      line: '',
-      gitlab: '',
-      weibo: '',
-      codepen: '',
-      youtube: '',
-      soundcloud: '',
-      medium: '',
+      github: 'aslisabanci',
+      linkedin: 'aslisabanci'
     }
   }
 };

@@ -1,6 +1,7 @@
 ---
 title: "Generating random Turkish first names with a super basic RNN"
 date: "2018-06-06T22:12:03.284Z"
+slug: "generating-random-turkish-names-with-rnn"
 template: "post"
 draft: false
 category: "DeepLearning"
