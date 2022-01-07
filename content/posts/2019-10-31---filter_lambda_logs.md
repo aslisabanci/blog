@@ -1,6 +1,6 @@
 ---
 title: "How to Filter AWS Lambda Log Messages for CloudWatch Dashboard Widget"
-date: "2019-31-10T22:12:03.284Z"
+date: "2019-10-31T22:12:03.284Z"
 slug: "filter-aws-lambda-logs"
 template: "post"
 draft: false

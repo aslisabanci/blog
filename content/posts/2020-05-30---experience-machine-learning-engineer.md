@@ -1,6 +1,6 @@
 ---
 title: "My experiences as a Machine Learning Engineer"
-date: "2020-30-05T22:12:03.284Z"
+date: "2020-05-30T22:12:03.284Z"
 slug: "experience-machinelearning-engineer"
 template: "post"
 draft: false
@@ -22,6 +22,6 @@ In the following posts, I’ll briefly share some of the applications I built. F
 
 So, enjoy!
 
-- [Building an end-to-end machine learning pipeline as a microservice](https://aslisabanci.github.io/blog/end-to-end-machinelearning-pipeline-microservice)
-- [Serving a machine learning model’s predictions through AWS Lambda and API Gateway](https://aslisabanci.github.io/blog/serving-predictions-aws-lambda-gateway)
-- [Building an automated workflow through Bitbucket and AWS components](https://aslisabanci.github.io/blog/automated-workflow-bitbucket-aws)
+- [Building an end-to-end machine learning pipeline as a microservice](https://aslisabanci.github.io/blog/posts/end-to-end-machinelearning-pipeline-microservice)
+- [Serving a machine learning model’s predictions through AWS Lambda and API Gateway](https://aslisabanci.github.io/blog/posts/serving-predictions-aws-lambda-gateway)
+- [Building an automated workflow through Bitbucket and AWS components](https://aslisabanci.github.io/blog/posts/automated-workflow-bitbucket-aws)

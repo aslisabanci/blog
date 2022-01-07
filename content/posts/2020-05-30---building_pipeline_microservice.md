@@ -1,6 +1,6 @@
 ---
 title: "Building an end-to-end machine learning pipeline as a microservice"
-date: "2020-30-05T22:12:03.284Z"
+date: "2020-05-30T22:12:03.284Z"
 slug: "end-to-end-machinelearning-pipeline-microservice"
 template: "post"
 draft: false

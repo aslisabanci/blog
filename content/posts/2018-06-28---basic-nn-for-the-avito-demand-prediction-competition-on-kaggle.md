@@ -1,6 +1,6 @@
 ---
 title: "Basic NN for the Avito Demand Prediction Competition on Kaggle"
-date: "2018-28-06T22:12:03.284Z"
+date: "2018-06-28T22:12:03.284Z"
 slug: "basic-neuralnet-avito-demand-prediction-competition-kaggle"
 template: "post"
 draft: false

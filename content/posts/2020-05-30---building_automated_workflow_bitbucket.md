@@ -1,6 +1,6 @@
 ---
 title: "Building an automated workflow through Bitbucket and AWS components"
-date: "2020-30-05T22:12:03.284Z"
+date: "2020-05-30T22:12:03.284Z"
 slug: "automated-workflow-bitbucket-aws"
 template: "post"
 draft: false

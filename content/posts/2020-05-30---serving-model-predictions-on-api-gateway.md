@@ -1,6 +1,6 @@
 ---
 title: "Serving a machine learning model’s predictions through AWS Lambda and API Gateway"
-date: "2020-30-05T22:12:03.284Z"
+date: "2020-05-30T22:12:03.284Z"
 slug: "serving-predictions-aws-lambda-gateway"
 template: "post"
 draft: false

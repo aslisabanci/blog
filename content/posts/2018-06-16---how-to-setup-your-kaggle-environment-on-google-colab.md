@@ -1,6 +1,6 @@
 ---
 title: "How to setup your Kaggle environment on Google Colab"
-date: "2018-16-06T22:12:03.284Z"
+date: "2018-06-16T22:12:03.284Z"
 slug: "setup-kaggle-env-on-colab"
 template: "post"
 draft: false

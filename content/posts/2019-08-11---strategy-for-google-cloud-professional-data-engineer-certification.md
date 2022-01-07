@@ -1,6 +1,6 @@
 ---
 title: "My Strategy For Getting My Google Cloud Professional Data Engineer Certification"
-date: "2019-11-08T22:12:03.284Z"
+date: "2019-08-11T22:12:03.284Z"
 slug: "prep-strategy-google-data-engineering"
 template: "post"
 draft: false
